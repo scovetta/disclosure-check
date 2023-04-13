@@ -480,7 +480,7 @@ class Check:
             url = url[4:]
         if url.endswith(".git"):
             url = url[:-4]
-        if "github.com" in url and url.endswith("/issues"):
+        if (url.startswith("https://github.com") or url.startswith("http://github.com")) and url.endswith("/issues"):
             url = url[:-7]
         if url.startswith("ssh://git@"):
             url = "https://" + url[10:]
