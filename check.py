@@ -4,6 +4,7 @@ Main entrypoint for the OpenSSF Vulnerability Disclosure Mechanism Detector.
 """
 
 import argparse
+import json
 import logging
 import os
 import re
@@ -27,11 +28,10 @@ VERSION = "0.1.1"
 
 class Check:
     notes = []
-    results = {}
     related_purls = set()
     contacts = []
 
-    def __init__(self, purl: PackageURL):
+    def __init__(self, purl: PackageURL, output_json: bool = False):
         if not purl:
             raise ValueError("purl is not a valid PackageURL.")
 
@@ -65,7 +65,10 @@ class Check:
                 self.analyze_github(related_purl)
                 self.analyze_tidelift(related_purl)
 
-        self.report_results_console(purl)
+        if output_json:
+            print(json.dumps(self.contacts, indent=2))
+        else:
+            self.report_results_console(purl)
 
     def report_results_console(self, purl: PackageURL):
         """Report results"""
@@ -133,8 +136,6 @@ class Check:
                 console.print(f"  [bold yellow]*[/bold yellow] {note}")
         else:
             console.print("  [cyan]No other notes.[/cyan]")
-
-        # print(json.dumps(self.results, indent=2))
 
     @lru_cache(maxsize=None)
     def analyze_github(self, purl: PackageURL) -> None:
@@ -231,7 +232,8 @@ class Check:
         else:
             suffix = purl.name
 
-        url = "https://tidelift.com/subscription/pkg/{purl.type}-{suffix}"
+        url = f"https://tidelift.com/subscription/pkg/{purl.type}-{suffix}"
+        logger.debug("Loading URL: [%s]", url)
         res = requests.get(url)
         if res.ok:
             self.contacts.append(
@@ -258,7 +260,7 @@ class Check:
             query = f"repo:{repo_obj.owner.login}/{repo_obj.name} (security@tidelift.com OR tidelift.com/security)"
             logger.debug("Searching for [%s]", query)
             files = gh.search_code(query)
-            if files:
+            if files.totalCount:
                 self.contacts.append(
                     {
                         "confidence": 50,
@@ -494,6 +496,7 @@ if __name__ == "__main__":
         "package_url", help="Package URL for the project/package you want to analyze."
     )
     parser.add_argument("--verbose", help="Show extra logging.", action="store_true")
+    parser.add_argument("--json", help="Output as JSON.", action="store_true")
     args = parser.parse_args()
     try:
         purl = PackageURL.from_string(args.package_url)
@@ -505,4 +508,4 @@ if __name__ == "__main__":
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
-    Check(purl)
+    Check(purl, output_json=args.json)
