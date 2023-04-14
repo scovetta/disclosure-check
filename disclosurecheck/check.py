@@ -17,6 +17,7 @@ import rich.console
 import yaml
 from github import Github
 from packageurl import PackageURL
+from disclosurecheck.utils import clean_url, clean_contact
 
 logging.basicConfig(format="%(asctime)s %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ console = rich.console.Console(highlight=False)
 VERSION = "0.1.1"
 
 
-class Check:
+class DisclosureCheck:
     notes = []
     related_purls = set()
     contacts = []
@@ -65,6 +66,9 @@ class Check:
                 self.analyze_github(related_purl)
                 self.analyze_tidelift(related_purl)
 
+        for contact in self.contacts:
+            clean_contact(contact)
+
         if output_json:
             print(json.dumps(self.contacts, indent=2))
         else:
@@ -73,45 +77,23 @@ class Check:
     def report_results_console(self, purl: PackageURL):
         """Report results"""
 
+        console.print(f"[bold white]OpenSSF Disclosure Check v{VERSION}[/bold white]")
+        console.print("")
+
         console.print(
-            f"[bold yellow]OpenSSF - [/bold yellow][bold green]Detected Vulnerability Reporting Mechanisms v{VERSION}[/bold green]"
+            f"[bold green]Package URL:[/bold green] [bold white][[/bold white] [bold yellow]{purl}[/bold yellow] [bold white]][/bold white]"
         )
-        console.print("------------------------------------------------------------")
-        console.print(f"[bold green]Package URL: [/bold green][yellow]{purl}[/yellow]")
 
         # Resources
         console.print("[bold green]Related Projects:[/bold green]")
         if self.related_purls:
             for related_purl in self.related_purls:
-                console.print(f"  [magenta]*[/magenta] {related_purl}")
+                console.print(f"  [bold yellow]*[/bold yellow] {related_purl}")
         else:
             console.print("  [cyan]No repositories found.[/cyan]")
 
-        # Results
-        console.print("[bold green]Results:[/bold green]")
-
-        # GitHub Private Vulnerability Reporting
-        if any((k.get("type") == "github_pvr" for k in self.contacts)):
-            console.print(
-                "  [[yellow]✓[/yellow]] Private vulnerability reporting is enabled for this repository."
-            )
-        else:
-            console.print(
-                "  [[red]✗[/red]] Private vulnerability reporting is [bold red]NOT[/bold red] enabled for this repository."
-            )
-
-        # Tidelift
-        if any((k.get("type") == "tidelift" for k in self.contacts)):
-            console.print(
-                "  [[yellow]✓[/yellow]] Tidelift accepts vulnerability reports for this repository (security@tidelift.com)"
-            )
-        else:
-            console.print(
-                "  [[red]✗[/red]] Tidelift does [bold red]NOT[/bold red] accept vulnerability reports for this repository."
-            )
-
-        # E-Mail Contacts
-        console.print("[bold green]Potential Contacts:[/bold green]")
+        # Contacts
+        console.print("[bold green]Preferred Contacts:[/bold green]")
         contact_seen = set()
         if self.contacts:
             for contact in self.contacts:
@@ -125,17 +107,20 @@ class Check:
                     if c in contact_seen:
                         continue
                     contact_seen.add(c)
-                    console.print(f"  [magenta]*[/magenta] {c}")
+                    console.print(f"  [bold yellow]*[/bold yellow] {c}")
+                elif contact['type'] == 'github_pvr':
+                    c = f"GitHub Private Vulnerability Reportinng <{contact['url']}>"
+                    contact_seen.add(c)
+                    console.print(f"  [bold yellow]*[/bold yellow] {c}")
+
         if not contact_seen:
             console.print("  [cyan]Sorry, no contacts could be found.[/cyan]")
 
         # Notes
-        console.print("[bold green]Other Notes:[/bold green]")
         if self.notes:
+            console.print("[bold green]Other Notes:[/bold green]")
             for note in self.notes:
                 console.print(f"  [bold yellow]*[/bold yellow] {note}")
-        else:
-            console.print("  [cyan]No other notes.[/cyan]")
 
     @lru_cache(maxsize=None)
     def analyze_github(self, purl: PackageURL) -> None:
@@ -166,34 +151,46 @@ class Check:
         _repo = repo_obj.name
         if _org != purl.namespace or _repo != purl.name:
             self.notes.append(
-                f"Repository was moved from {purl.namespace}/{purl.name} to {_org}/{_repo}."
+                f"Repository was moved from [bold blue]{purl.namespace}/{purl.name}[/bold blue] to [bold blue]{_org}/{_repo}[/bold blue]."
             )
             self.related_purls.add(
                 PackageURL(type="github", namespace=_org, name=_repo)
             )
+            new_purl = PackageURL(type="github", namespace=_org, name=_repo)
+        else:
+            new_purl = purl
 
         # We probably don't want to report issues to a forked repository.
         if repo_obj.fork:
-            self.notes.append(f"Repository {_org}/{_repo} is a fork.")
+            self.notes.append(
+                f"Repository [bold blue]{_org}/{_repo}[/bold blue] is a fork."
+            )
 
         if repo_obj.archived:
-            self.notes.append(f"Repository {_org}/{_repo} has been archived.")
+            self.notes.append(
+                f"Repository [bold blue]{_org}/{_repo}[/bold blue] has been archived."
+            )
 
         # Check for private vulnerability reporting
         url = f"https://github.com/{_org}/{_repo}/security/advisories"
         res = requests.get(url, timeout=30)
         if "Report a vulnerability" in res.text:
-            self.contacts.append({"priority": 100, "type": "github_pvr", "source": url})
+            self.contacts.append(
+                {
+                    "priority": 100,
+                    "type": "github_pvr",
+                    "url": f"https://github.com/{_org}/{_repo}/security/advisories/new",
+                    "source": url,
+                }
+            )
             logger.info("Private vulnerability reporting is enabled.")
 
         # Check for a contact in a "security.md" in a well-known place (avoid the API call to code search)
-        # for filename in ['SECURITY.md', 'security.md', 'Security.md', '.github/security.md', 'docs/security.md']:
-        #    self.check_github_security_md(_org, _repo, filename=filename)
+        for filename in ['SECURITY.md', 'security.md', 'Security.md', '.github/security.md', 'docs/security.md', '.github/SECURITY.md']:
+            self.check_github_security_md(new_purl, filename=filename)
 
         # See if the repo supports Security Insights
-        self.check_github_security_insights(
-            PackageURL(type="github", namespace=_org, name=_repo)
-        )
+        self.check_github_security_insights(new_purl)
 
         # Try searching for security.md files and related
         logger.debug(
@@ -202,6 +199,7 @@ class Check:
         files = gh.search_code(
             f"repo:{_org}/{_repo} path:/(^|\/)(readme|security)(\.(md|rst|txt))?$/i"
         )
+
         num_files_left = 30
         for file in files:
             num_files_left -= 1
@@ -240,7 +238,8 @@ class Check:
                 {
                     "confidence": 100,
                     "type": "tidelift",
-                    "contact": "security@tidelift.com",
+                    "name": "Tidelift Security",
+                    "email": "security@tidelift.com",
                     "evidence": [url],
                 }
             )
@@ -300,25 +299,38 @@ class Check:
                     {"priority": 100, "type": "email", "source": url, "email": email}
                 )
 
-    # def check_github_security_md(self, org, repo, branch='master', filename='SECURITY.md'):
-    #     found_match = False
-    #     res = requests.get(f"https://raw.githubusercontent.com/{org}/{repo}/{branch}/{filename}")
-    #     if res.status_code == 200:
-    #         matches = set(re.findall(r'[\w.+-]+@[\w-]+\.[\w.-]+', res.text))
-    #         for match in matches:
-    #             self.contacts.append({
-    #                 'priority': 100,
-    #                 'type': 'email',
-    #                 'source': '{filename} in repository.',
-    #                 'email': match
-    #             })
-    #             found_match = True
+    def check_github_security_md(self, purl: PackageURL, filename: str):
+        logger.debug("Checking GitHub SECURITY.md: %s", purl)
+        if purl is None:
+            logger.debug("Invalid PackageURL.")
+            return
 
-    #         if 'tidelift.com' in res.text:
-    #             self.tidelift_enabled = 'true'
-    #             found_match = True
+        if purl.type != "github":
+            logger.debug("Sorry, only GitHub is supported.")
+            return
 
-    #     return found_match
+        org = purl.namespace
+        repo = purl.name
+
+        url = f"https://raw.githubusercontent.com/{org}/{repo}/master/{filename}"
+        res = requests.get(url)
+        if res.ok:
+            matches = set(re.findall(r'[\w.+-]+@[\w-]+\.[\w.-]+', res.text))
+            for match in matches:
+                self.contacts.append({
+                    'priority': 100,
+                    'type': 'email',
+                    'source': url,
+                    'email': match
+                })
+
+            if 'tidelift.com' in res.text:
+                self.contacts.append({
+                        "confidence": 50,
+                        "type": "tidelift",
+                        "contact": "security@tidelift.com",
+                        "source": url
+                })
 
     @lru_cache(maxsize=None)
     def analyze_pypi(self, purl: PackageURL):
@@ -360,11 +372,14 @@ class Check:
                     )
 
             urls = [
-                self.clean_url(data.get("package_url")),
-                self.clean_url(data.get("project_url")),
-                self.clean_url(data.get("project_urls", {}).get("Homepage")),
-                self.clean_url(data.get("project_urls", {}).get("Source")),
-                self.clean_url(data.get("project_urls", {}).get("Tracker")),
+                clean_url(data.get("package_url")),
+                clean_url(data.get("project_url")),
+                clean_url(data.get("project_urls", {}).get("Homepage")),
+                clean_url(data.get("project_urls", {}).get("Bug Tracker")),
+                clean_url(data.get("project_urls", {}).get("CI")),
+                clean_url(data.get("project_urls", {}).get("Source")),
+                clean_url(data.get("project_urls", {}).get("Source Code")),
+                clean_url(data.get("project_urls", {}).get("Tracker")),
             ]
 
             for url in set(urls):
@@ -451,9 +466,9 @@ class Check:
                         )
 
             urls = [
-                self.clean_url(data.get("bugs", {}).get("url")),
-                self.clean_url(data.get("repository", {}).get("url")),
-                self.clean_url(data.get("homepage")),
+                clean_url(data.get("bugs", {}).get("url")),
+                clean_url(data.get("repository", {}).get("url")),
+                clean_url(data.get("homepage")),
             ]
             for url in set(urls):
                 if not url:
@@ -468,24 +483,6 @@ class Check:
                     )
                 else:
                     logger.debug("URL was not a GitHub URL, ignoring.")
-
-    @lru_cache(maxsize=None)
-    def clean_url(self, url):
-        if not url:
-            return None
-        if "github.com" not in url:
-            return None
-
-        if url.startswith("git+"):
-            url = url[4:]
-        if url.endswith(".git"):
-            url = url[:-4]
-        if (url.startswith("https://github.com") or url.startswith("http://github.com")) and url.endswith("/issues"):
-            url = url[:-7]
-        if url.startswith("ssh://git@"):
-            url = "https://" + url[10:]
-        parsed = urlparse(url)
-        return "https://github.com" + parsed.path
 
 
 if __name__ == "__main__":
@@ -508,4 +505,4 @@ if __name__ == "__main__":
     if args.verbose:
         logger.setLevel(logging.DEBUG)
 
-    Check(purl, output_json=args.json)
+    DisclosureCheck(purl, output_json=args.json)

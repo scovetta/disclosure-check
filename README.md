@@ -10,9 +10,9 @@ python -mvenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-python ./check.py pkg:pypi/django
+python -m disclosurecheck.check pkg:pypi/django
 
-python ./check.py --help
+python -m disclosurecheck.check --help
 
 usage: OpenSSF Vulnerability Disclosure Mechanism Detector [-h] [--verbose] [--json] package_url
 
@@ -24,7 +24,7 @@ options:
   --verbose    Show extra logging.
   --json       Output as JSON.
  ```
- 
+
  ### Screenshot
- 
+
 <img width="491" alt="Screenshot 2023-04-13 003734" src="https://user-images.githubusercontent.com/732166/231688054-e159fe50-1b2f-4fa3-bb93-70fe8947e19a.png">
