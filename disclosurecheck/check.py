@@ -11,6 +11,7 @@ import re
 import sys
 from functools import lru_cache
 from urllib.parse import urlparse
+from urlextract import URLExtract
 
 import requests
 import rich.console
@@ -52,13 +53,26 @@ class DisclosureCheck:
                 sys.exit(1)
 
         check_func = getattr(self, f"analyze_{purl.type}", None)
-        if not check_func:
+        if check_func:
+            check_func(purl)
+
+        # In addition, try libraries.io.
+        try:
+            self.analyze_librariesio(purl)
+        except:
             logger.warning(
                 "PackageURL type=%s is not currently supported. Pull requests welcome.",
                 purl.type,
             )
 
-        check_func(purl)
+        if purl.type == 'nuget':
+            logger.debug("Package was NuGet, so adding the NuGet package contact page.")
+            self.contacts.append({
+                "priority": 100,
+                "type": "nuget_contact",
+                "url": f"https://www.nuget.org/packages/{purl.name}"
+            })
+
         self.analyze_tidelift(purl)
 
         for related_purl in self.related_purls.copy():
@@ -109,9 +123,18 @@ class DisclosureCheck:
                     contact_seen.add(c)
                     console.print(f"  [bold yellow]*[/bold yellow] {c}")
                 elif contact['type'] == 'github_pvr':
-                    c = f"GitHub Private Vulnerability Reportinng <{contact['url']}>"
+                    c = f"GitHub Private Vulnerability Reporting <{contact['url']}>"
                     contact_seen.add(c)
                     console.print(f"  [bold yellow]*[/bold yellow] {c}")
+                elif contact['type'] == 'nuget_contact':
+                    c = f"NuGet 'Contact Owner' Link <{contact['url']}"
+                    contact_seen.add(c)
+                    console.print(f"  [bold yellow]*[/bold yellow] {c}")
+                elif contact["type"] == "url":
+                    c = contact["url"]
+                    contact_seen.add(c)
+                    console.print(f"  [bold yellow]*[/bold yellow] {c}")
+
 
         if not contact_seen:
             console.print("  [cyan]Sorry, no contacts could be found.[/cyan]")
@@ -186,8 +209,10 @@ class DisclosureCheck:
             logger.info("Private vulnerability reporting is enabled.")
 
         # Check for a contact in a "security.md" in a well-known place (avoid the API call to code search)
+        org_purl = PackageURL(type='github', namespace=new_purl.namespace, name='.github')
         for filename in ['SECURITY.md', 'security.md', 'Security.md', '.github/security.md', 'docs/security.md', '.github/SECURITY.md']:
             self.check_github_security_md(new_purl, filename=filename)
+            self.check_github_security_md(org_purl, filename=filename)
 
         # See if the repo supports Security Insights
         self.check_github_security_insights(new_purl)
@@ -207,7 +232,7 @@ class DisclosureCheck:
                 break
             logger.debug("Searching content of [%s]", file.name)
             content = file.decoded_content.decode("utf-8")
-            matches = set(re.findall(r"[\w.+-]+@[\w-]+\.[\w.-]+", content))
+            matches = set(re.findall(r"[\w.+-]+(@|\[at\])[\w-]+\.[\w.-]+", content))
             for match in matches:
                 self.contacts.append(
                     {
@@ -300,7 +325,7 @@ class DisclosureCheck:
                 )
 
     def check_github_security_md(self, purl: PackageURL, filename: str):
-        logger.debug("Checking GitHub SECURITY.md: %s", purl)
+        logger.debug("Checking GitHub [%s]: %s", filename, purl)
         if purl is None:
             logger.debug("Invalid PackageURL.")
             return
@@ -315,8 +340,9 @@ class DisclosureCheck:
         url = f"https://raw.githubusercontent.com/{org}/{repo}/master/{filename}"
         res = requests.get(url)
         if res.ok:
-            matches = set(re.findall(r'[\w.+-]+@[\w-]+\.[\w.-]+', res.text))
+            matches = set(re.findall(r'[\w.+-]+(?:@|\[at\])[\w-]+\.[\w.-]+', res.text))
             for match in matches:
+                match = match.replace('[at]', '@')
                 self.contacts.append({
                     'priority': 100,
                     'type': 'email',
@@ -326,10 +352,19 @@ class DisclosureCheck:
 
             if 'tidelift.com' in res.text:
                 self.contacts.append({
-                        "confidence": 50,
-                        "type": "tidelift",
-                        "contact": "security@tidelift.com",
-                        "source": url
+                    "confidence": 50,
+                    "type": "tidelift",
+                    "contact": "security@tidelift.com",
+                    "source": url
+                })
+
+            # Look for any URL in the file
+            for _url in set(URLExtract().find_urls(res.text)):
+                self.contacts.append({
+                    'confidence': 40,
+                    "type": "url",
+                    "url": _url,
+                    "source": url
                 })
 
     @lru_cache(maxsize=None)
@@ -484,6 +519,74 @@ class DisclosureCheck:
                 else:
                     logger.debug("URL was not a GitHub URL, ignoring.")
 
+    @lru_cache
+    def analyze_nuget(self, purl: PackageURL):
+        logger.debug("Checking NuGet project: %s", purl)
+        if purl is None:
+            logger.debug("Invalid PackageURL.")
+            return
+
+        url = f'https://www.nuget.org/packages/{purl.name}'
+        urls = []
+        res = requests.get(url, timeout=30)
+        if res.ok:
+            for line in res.text.splitlines():
+                if any([t in line for t in ['outbound-repository-url', 'outbound-project-url']]):
+                    matches = re.match(r'.*href="([^"]+)"', line)
+                    if matches:
+                        urls.append(clean_url(matches.group(1)))
+
+            for url in set(urls):
+                if not url:
+                    continue
+                logger.debug("Found a URL (%s)", url)
+                matches = re.match(r".*github\.com/([^/]+)/([^/]+)", url, re.IGNORECASE)
+                if matches:
+                    self.related_purls.add(
+                        PackageURL.from_string(
+                            "pkg:github/" + matches.group(1) + "/" + matches.group(2)
+                        )
+                    )
+                else:
+                    logger.debug("URL was not a GitHub URL, ignoring.")
+        else:
+            logger.warning("Error loading NuGet page for %s, error code=%d", purl, res.status_code)
+
+    @lru_cache
+    def analyze_librariesio(self, purl: PackageURL):
+        logger.debug("Checking project: %s", purl)
+        if purl is None:
+            logger.debug("Invalid PackageURL.")
+            return
+        if purl.namespace:
+            package_name = f"{purl.namespace}/{purl.name}"
+        else:
+            package_name = purl.name
+
+        url = f'https://libraries.io/api/{purl.type}/{package_name}'
+
+        res = requests.get(url, timeout=30)      # TODO Add API Token
+        if res.ok:
+            data = res.json()
+
+            urls = [
+                clean_url(data.get("repository_url"))
+            ]
+            for url in set(urls):
+                if not url:
+                    continue
+                logger.debug("Found a URL (%s)", url)
+                matches = re.match(r".*github\.com/([^/]+)/([^/]+)", url, re.IGNORECASE)
+                if matches:
+                    self.related_purls.add(
+                        PackageURL.from_string(
+                            "pkg:github/" + matches.group(1) + "/" + matches.group(2)
+                        )
+                    )
+                else:
+                    logger.debug("URL was not a GitHub URL, ignoring.")
+        else:
+            logger.warning("Error loading data from libraries.io, status code: %d", res.status_code)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

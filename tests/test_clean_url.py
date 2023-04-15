@@ -21,6 +21,8 @@ class TestCleanUrlMethods(unittest.TestCase):
         ('https://github.com/foo/bar/SECURITY.md', 'https://github.com/foo/bar'),
         ('https://github.com/foo/bar/blob/main/README.md', 'https://github.com/foo/bar'),
         ('http://github.com/foo/bar.git?a=b&c=d#test.git', 'https://github.com/foo/bar'),
+        ('https://raw.github.com/foo/bar/SECURITY.md', 'https://github.com/foo/bar'),
+        ('https://raw.githubusercontent.com/foo/bar/SECURITY.md', 'https://github.com/foo/bar'),
         ('https://bitbucket.org', None),
         ('ssh://git@github.com/foo/bar', 'https://github.com/foo/bar'),
         ('ssh://git@github.com/foo/bar#quux', 'https://github.com/foo/bar'),

@@ -16,6 +16,9 @@ def clean_url(url):
     except Exception as msg:
         return None
 
+    if parsed.hostname in ['raw.github.com', 'raw.githubusercontent.com', 'www.github.com']:
+        parsed = parsed._replace(netloc='github.com')
+
     if parsed.hostname != 'github.com':
         return None
 
@@ -38,17 +41,19 @@ def clean_contact(contact: dict):
     name = contact.get('name')
     email = contact.get('email')
 
-    if email and name in [None, '', 'None', 'null', 'NULL']:
+    if email is not None and name in [None, '', 'None', 'null', 'NULL']:
         matches = re.match(r'^(.*)<([\w.+-]+@[\w-]+\.[\w.-]+)>\s*$', email)
         if matches:
             name = matches.group(1).strip()
             email = matches.group(2).strip()
 
-    if name and email in [None, '', 'None', 'null', 'NULL']:
+    if name is not None and email in [None, '', 'None', 'null', 'NULL']:
         matches = re.match(r'^(.*)<([\w.+-]+@[\w-]+\.[\w.-]+)>\s*$', name)
         if matches:
             name = matches.group(1).strip()
             email = matches.group(2).strip()
 
-    contact['name'] = name
-    contact['email'] = email
+    if name:
+        contact['name'] = name
+    if email:
+        contact['email'] = email
