@@ -6,7 +6,7 @@ class TestCleanUrlMethods(unittest.TestCase):
         ('foo', None),
         (None, None),
         ('https://github.com/foo/bar', 'https://github.com/foo/bar'),
-        ('https://github.com/foo/bar#quux', 'https://github.com/foo/bar'),
+        ('https://github.com/foo/bar#quux', 'https://github.com/foof/bar'),
         ('https://github.com/foo/bar?a=b', 'https://github.com/foo/bar'),
         ('https://github.com/foo/bar?a=b&c=d', 'https://github.com/foo/bar'),
         ('https://github.com/foo/bar?a=b&c=d#efg;hij.klm', 'https://github.com/foo/bar'),

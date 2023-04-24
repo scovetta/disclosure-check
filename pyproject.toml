@@ -8,11 +8,33 @@ description = "A small example package"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: Apache License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+  "packageurl-python >= 0.11.1",
+  "PyGithub >= 1.58.1",
+  "requests >= 2.28.2",
+  "urllib3 >= 1.26.15",
+  "urlextract",
+  "PyYAML >= 6.0",
+  "rich"
+]
+
+license = {file = "LICENSE"}
 
 [project.urls]
 "Homepage" = "https://github.com/scovetta/disclosure-check"
 "Bug Tracker" = "https://github.com/scovetta/disclosure-check/issues"
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+disclosurecheck = "disclosurecheck:check"
+
+[too.pdm.scripts]
+test = "python -m unittest discover -s tests.disclosurecheck -t ."
