@@ -1,5 +1,7 @@
-# disclosure-check
-PoC for detecting disclosure mechanisms for open source projects
+[![Scorecard supply-chain security](https://github.com/scovetta/disclosure-check/actions/workflows/scorecards.yml/badge.svg)](https://github.com/scovetta/disclosure-check/actions/workflows/scorecards.yml)
+
+# Disclosure Check
+A tool for detecting disclosure mechanisms for open source projects
 
 ### Usage
 
