@@ -1,6 +1,7 @@
 #!/bin/bash
 
 deactivate
+rm dist/*
 source venv/bin/activate
 python -mbuild .
 

@@ -9,6 +9,7 @@ from functools import lru_cache
 from typing import Any, List
 from urllib.parse import urlparse
 
+import pkg_resources
 import rich.console
 from packageurl import PackageURL
 
@@ -21,7 +22,7 @@ from disclosurecheck.utils import clean_contacts, clean_url
 from . import Context, logger
 
 console = rich.console.Console(highlight=False)
-VERSION = "0.1.3"
+VERSION = pkg_resources.get_distribution('disclosurecheck').version
 
 
 class DisclosureCheck:
