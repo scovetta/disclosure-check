@@ -28,13 +28,14 @@ COMMON_SECURITY_MD_PATHS = set([
 	"docs/security.adoc",
 	"docs/security.markdown",
 	"docs/security.md",
-	"docs/security.rst"
+	"docs/security.rst",
 	"security.adoc",
 	"security.markdown",
 	"security.rst",
     "security.md",
     "Security.md",
     "SECURITY.md",
+    "%name%.gemspec"
 ])
 
 MAX_CONTENT_SEARCH_FILES = 30
@@ -92,7 +93,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
 
     _org = repo_obj.owner.login
     _repo = repo_obj.name
-    if _org != purl.namespace or _repo != purl.name:
+    if _org.lower() != purl.namespace.lower() or _repo.lower() != purl.name.lower():
         context.notes.add(
             f"Repository was moved from [bold blue]{purl.namespace}/{purl.name}[/bold blue] to [bold blue]{_org}/{_repo}[/bold blue]."
         )
@@ -117,6 +118,9 @@ def analyze(purl: PackageURL, context: Context) -> None:
     # Check for a contact in a "security.md" in a well-known place (avoid the API call to code search)
     org_purl = PackageURL(type="github", namespace=purl.namespace, name=".github")
     for filename in COMMON_SECURITY_MD_PATHS:
+        if '%name%' in filename:
+            filename = filename.replace('%name%', purl.name)
+
         check_github_security_md(purl, filename, context)
         check_github_security_md(org_purl, filename, context)
 
