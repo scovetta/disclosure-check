@@ -17,14 +17,25 @@ logger = logging.getLogger(__name__)
 
 NUGET_WEBSITE = "https://www.nuget.org"
 
-COMMON_SECURITY_MD_PATHS = [
-    "SECURITY.md",
+COMMON_SECURITY_MD_PATHS = set([
+	".github/security.adoc",
+	".github/security.markdown",
+	".github/security.rst",
+    ".github/security.md",
+    ".github/SECURITY.md",
+	"doc/security.rst",
+    "doc/security.md",
+	"docs/security.adoc",
+	"docs/security.markdown",
+	"docs/security.md",
+	"docs/security.rst"
+	"security.adoc",
+	"security.markdown",
+	"security.rst",
     "security.md",
     "Security.md",
-    ".github/security.md",
-    "docs/security.md",
-    ".github/SECURITY.md",
-]
+    "SECURITY.md",
+])
 
 MAX_CONTENT_SEARCH_FILES = 30
 
