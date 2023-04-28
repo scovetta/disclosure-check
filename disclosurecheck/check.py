@@ -34,6 +34,10 @@ class DisclosureCheck:
 
         self.context = Context()
 
+        # Package content analysis
+        from disclosurecheck.metadata.packagecontent import analyze_packagecontent
+        analyze_packagecontent(purl, self.context)
+
         # Get the analyzer function based on the PackageURL type
         try:
             importlib.import_module(f"disclosurecheck.packagemanagers.{purl.type}")
