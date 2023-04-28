@@ -38,11 +38,12 @@ def analyze_file(filename: str, context: Context) -> None:
     SEARCH_FILES = [
         re.compile(r".*\.gemspec$", re.IGNORECASE),
         re.compile(r".*/security\.", re.IGNORECASE),
+        re.compile(r".*\.cabal$", re.IGNORECASE),
     ]
     if any([regex.match(filename) for regex in SEARCH_FILES]):
         try:
             with open(filename, "r", encoding="utf-8") as f:
                 content = f.read()
-            find_contacts(filename, content, context, priority_adjustment=-20)
+            find_contacts(filename, content, context)
         except Exception as msg:
             logger.warning("Error reading file [%s]: %s", filename, msg)
