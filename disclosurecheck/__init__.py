@@ -1,6 +1,7 @@
 import argparse
 import logging
-from typing import Any, List, MutableSet
+import sys
+from typing import Any, List, MutableSet, Dict
 
 import requests_cache
 from packageurl import PackageURL
@@ -23,6 +24,7 @@ def check():
         purl = PackageURL.from_string(args.package_url)
     except:
         logger.fatal("Invalid PackageURL provided. For example, pkg:npm/left-pad or pkg:github/madler/zlib.")
+        sys.exit(1)
 
     if args.verbose:
         logger.setLevel(logging.DEBUG)
@@ -35,4 +37,4 @@ def check():
 class Context:
     notes: MutableSet[str] = set()
     related_purls: MutableSet[PackageURL] = set()
-    contacts: List[dict[str, Any]] = []
+    contacts: List[Dict[str, Any]] = []
