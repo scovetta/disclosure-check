@@ -1,6 +1,6 @@
 import argparse
 import logging
-from typing import Any, List, MutableSet
+from typing import Any, List, MutableSet, Dict
 
 import requests_cache
 from packageurl import PackageURL
@@ -35,4 +35,4 @@ def check():
 class Context:
     notes: MutableSet[str] = set()
     related_purls: MutableSet[PackageURL] = set()
-    contacts: List[dict[str, Any]] = []
+    contacts: List[Dict[str, Any]] = []
