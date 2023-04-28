@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 from typing import Any, List, MutableSet, Dict
 
 import requests_cache
@@ -23,6 +24,7 @@ def check():
         purl = PackageURL.from_string(args.package_url)
     except:
         logger.fatal("Invalid PackageURL provided. For example, pkg:npm/left-pad or pkg:github/madler/zlib.")
+        sys.exit(1)
 
     if args.verbose:
         logger.setLevel(logging.DEBUG)
