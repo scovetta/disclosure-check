@@ -1,6 +1,6 @@
 [project]
 name = "disclosurecheck"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
   { name="Michael Scovetta", email="michael.scovetta@gmail.com" },
 ]
@@ -35,7 +35,7 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-disclosurecheck = "disclosurecheck:check"
+disclosurecheck = "disclosurecheck:main"
 
-[too.pdm.scripts]
+[tool.pdm.scripts]
 test = "python -m unittest discover -s tests.disclosurecheck -t ."

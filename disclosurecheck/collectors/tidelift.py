@@ -6,10 +6,10 @@ import requests
 from github import Github
 from packageurl import PackageURL
 
-from disclosurecheck import Context
-from disclosurecheck.packagemanagers.github import get_github_token
+from disclosurecheck.util.context import Context
+from disclosurecheck.collectors.github import get_github_token
 
-from ..utils import clean_url
+from ..util.searchers import sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +40,10 @@ def analyze_tidelift(purl: PackageURL, context: Context):
     if res.ok:
         context.contacts.append(
             {
-                "priority": 95,
+                "priority": 5,
                 "type": "tidelift",
                 "name": "Tidelift Security",
-                "email": "security@tidelift.com",
+                "value": "security@tidelift.com",
                 "evidence": [url],
             }
         )
@@ -68,9 +68,9 @@ def analyze_tidelift(purl: PackageURL, context: Context):
         if files.totalCount:
             context.contacts.append(
                 {
-                    "priority": 95,
+                    "priority": 5,
                     "type": "tidelift",
-                    "contact": "security@tidelift.com",
+                    "value": "security@tidelift.com",
                     "evidence": [f.name for f in files],
                 }
             )

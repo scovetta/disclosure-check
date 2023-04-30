@@ -5,10 +5,8 @@ from functools import lru_cache
 import requests
 from packageurl import PackageURL
 
-from disclosurecheck.utils import normalize_packageurl
-
-from .. import Context
-from ..utils import clean_url
+from disclosurecheck.util.context import Context
+from ..util.normalize import normalize_packageurl, sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +28,7 @@ def analyze(purl: PackageURL, context: Context):
             if any([t in line for t in ["outbound-repository-url", "outbound-project-url"]]):
                 matches = re.match(r'.*href="([^"]+)"', line)
                 if matches:
-                    urls.append(clean_url(matches.group(1)))
+                    urls.append(sanitize_github_url(matches.group(1)))
 
         for url in set(urls):
             if not url:
@@ -38,7 +36,7 @@ def analyze(purl: PackageURL, context: Context):
             logger.debug("Found a URL (%s)", url)
             matches = re.match(r".*github\.com/([^/]+)/([^/]+)?", url, re.IGNORECASE)
             if matches:
-                context.related_purls.add(
+                context.related_purls.append(
                     normalize_packageurl(
                         PackageURL.from_string("pkg:github/" + matches.group(1) + "/" + matches.group(2))
                     )
@@ -51,5 +49,5 @@ def analyze(purl: PackageURL, context: Context):
     # In addition, all NuGet packages have a way to contact the author (web page)
     logger.debug("Package was NuGet, so adding the NuGet package contact page.")
     context.contacts.append(
-        {"priority": 60, "type": "nuget_contact", "url": f"https://www.nuget.org/packages/{purl.name}"}
+        {"priority": 40, "type": "nuget_contact", "value": f"https://www.nuget.org/packages/{purl.name}"}
     )

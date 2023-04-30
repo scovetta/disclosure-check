@@ -7,11 +7,12 @@ import requests
 from github import Github
 from packageurl import PackageURL
 
-from disclosurecheck.metadata.securityinsights import analyze_securityinsights
-from disclosurecheck.utils import find_contacts, normalize_packageurl
+from disclosurecheck.collectors.securityinsights import analyze_securityinsights
+from disclosurecheck.util.searchers import find_contacts
+from disclosurecheck.util.normalize import normalize_packageurl
 
-from .. import Context
-from ..utils import clean_url
+from disclosurecheck.util.context import Context
+from ..util.normalize import normalize_packageurl, sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +77,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
         return
 
     gh = Github(github_token)
-    context.related_purls.add(normalize_packageurl(purl))
+    context.related_purls.append(normalize_packageurl(purl))
 
     try:
         repo_obj = gh.get_repo(f"{purl.namespace}/{purl.name}")
@@ -86,20 +87,32 @@ def analyze(purl: PackageURL, context: Context) -> None:
 
     # We probably don't want to report issues to a forked repository.
     if repo_obj.fork:
-        context.notes.add(f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] is a fork.")
+        context.notes.append(f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] is a fork.")
 
     if repo_obj.archived:
-        context.notes.add(f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] has been archived.")
+        context.notes.append(f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] has been archived.")
 
     _org = repo_obj.owner.login
     _repo = repo_obj.name
     if _org.lower() != purl.namespace.lower() or _repo.lower() != purl.name.lower():
-        context.notes.add(
+        context.notes.append(
             f"Repository was moved from [bold blue]{purl.namespace}/{purl.name}[/bold blue] to [bold blue]{_org}/{_repo}[/bold blue]."
         )
-        context.related_purls.add(PackageURL(type="github", namespace=_org, name=_repo))
+        context.related_purls.append(PackageURL(type="github", namespace=_org, name=_repo))
         logger.debug(f"Will resume analysis at {_org}/{_repo}.")
         return
+
+    # Check for an email address of the owner (not typical)
+    if repo_obj.owner.email:
+        context.contacts.append(
+            {
+                "priority": 25,
+                "type": "email",
+                "source": f"https://github.com/{_org}",
+                "value": repo_obj.owner.email,
+            }
+        )
+        logger.info("Found email address for repository owner: %s", repo_obj.owner.email)
 
     # Check for private vulnerability reporting
     url = f"https://github.com/{_org}/{_repo}/security/advisories"
@@ -107,9 +120,9 @@ def analyze(purl: PackageURL, context: Context) -> None:
     if "Report a vulnerability" in res.text:
         context.contacts.append(
             {
-                "priority": 100,
+                "priority": 0,
                 "type": "github_pvr",
-                "url": f"https://github.com/{_org}/{_repo}/security/advisories/new",
+                "value": f"https://github.com/{_org}/{_repo}/security/advisories/new",
                 "source": url,
             }
         )
@@ -142,10 +155,10 @@ def analyze(purl: PackageURL, context: Context) -> None:
         for match in matches:
             context.contacts.append(
                 {
-                    "priority": 40,
+                    "priority": 60,
                     "type": "email",
                     "source": file.url,
-                    "email": match,
+                    "value": match,
                 }
             )
     if num_files_left == MAX_CONTENT_SEARCH_FILES:

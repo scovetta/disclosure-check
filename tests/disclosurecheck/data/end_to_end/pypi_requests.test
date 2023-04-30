@@ -1,0 +1,33 @@
+pkg:pypi/requests
+{
+  "notes": [],
+  "contacts": [
+    {
+      "priority": 0,
+      "type": "github_pvr",
+      "value": "https://github.com/psf/requests/security/advisories/new",
+      "source": "https://github.com/psf/requests/security/advisories"
+    },
+    {
+      "priority": 65,
+      "type": "email",
+      "source": "https://github.com/psf/requests",
+      "value": "nate.prewitt@gmail.com"
+    },
+    {
+      "priority": 65,
+      "type": "email",
+      "source": "https://github.com/psf/requests",
+      "value": "sethmichaellarson@gmail.com"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": null,
+      "source": "https://github.com/psf/requests"
+    }
+  ],
+  "related_purls": [
+    "pkg:github/psf/requests"
+  ]
+}

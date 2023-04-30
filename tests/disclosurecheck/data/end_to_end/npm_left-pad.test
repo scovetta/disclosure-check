@@ -1,0 +1,42 @@
+pkg:npm/left-pad
+{
+  "notes": [
+    "Repository [bold blue]left-pad/left-pad[/bold blue] has been archived.",
+    "Repository [bold blue]stevemao/left-pad[/bold blue] has been archived.",
+    "Repository was moved from [bold blue]stevemao/left-pad[/bold blue] to [bold blue]left-pad/left-pad[/bold blue]."
+  ],
+  "contacts": [
+    {
+      "priority": 10,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "westlac",
+      "value": "cameron.westland@autodesk.com"
+    },
+    {
+      "priority": 10,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "stevemao",
+      "value": "maochenyan@gmail.com"
+    },
+    {
+      "priority": 10,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "sebmck",
+      "value": "sebmck@gmail.com"
+    },
+    {
+      "priority": 15,
+      "type": "email",
+      "source": "npm registry (_npmUser)",
+      "name": "stevemao",
+      "value": "maochenyan@gmail.com"
+    }
+  ],
+  "related_purls": [
+    "pkg:github/left-pad/left-pad",
+    "pkg:github/stevemao/left-pad"
+  ]
+}

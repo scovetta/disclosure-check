@@ -5,10 +5,8 @@ from functools import lru_cache
 import requests
 from packageurl import PackageURL
 
-from disclosurecheck.utils import normalize_packageurl
-
-from .. import Context
-from ..utils import clean_url
+from disclosurecheck.util.context import Context
+from ..util.normalize import normalize_packageurl, sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -40,14 +38,14 @@ def analyze(purl: PackageURL, context: Context) -> None:
                     "type": "email",
                     "source": "npm registry (author)",
                     "name": author_name,
-                    "email": author_email,
+                    "value": author_email,
                 }
             )
 
         for match in re.findall(r"\s(@[\w-]+)", author_name):
             context.contacts.append(
                 {
-                    "priority": 30,
+                    "priority": 70,
                     "type": "social",
                     "source": "npm registry (author/Twitter)",
                     "value": f'twitter:{match}',
@@ -62,11 +60,11 @@ def analyze(purl: PackageURL, context: Context) -> None:
             if npm_email:
                 context.contacts.append(
                     {
-                        "priority": 85,
+                        "priority": 15,
                         "type": "email",
                         "source": "npm registry (_npmUser)",
                         "name": npm_name,
-                        "email": npm_email,
+                        "value": npm_email,
                     }
                 )
 
@@ -76,19 +74,19 @@ def analyze(purl: PackageURL, context: Context) -> None:
                 if maintainer_email:
                     context.contacts.append(
                         {
-                            "priority": 90,
+                            "priority": 10,
                             "type": "email",
                             "source": "npm registry (latest.maintainer)",
                             "name": maintainer_name,
-                            "email": maintainer_email,
+                            "value": maintainer_email,
                         }
                     )
 
         # All of the places a GitHub URL could hide in npm metadata
         urls = [
-            clean_url(data.get("bugs", {}).get("url")),
-            clean_url(data.get("repository", {}).get("url")),
-            clean_url(data.get("homepage")),
+            sanitize_github_url(data.get("bugs", {}).get("url")),
+            sanitize_github_url(data.get("repository", {}).get("url")),
+            sanitize_github_url(data.get("homepage")),
         ]
 
         for url in set(urls):
@@ -98,7 +96,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
             logger.debug("Found a URL (%s)", url)
             matches = re.match(r".*github\.com/([^/]+)/([^/]+)?", url, re.IGNORECASE)
             if matches:
-                context.related_purls.add(
+                context.related_purls.append(
                     normalize_packageurl(
                         PackageURL.from_string("pkg:github/" + matches.group(1) + "/" + matches.group(2))
                     )
