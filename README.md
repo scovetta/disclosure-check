@@ -1,18 +1,15 @@
-# disclosure-check
-PoC for detecting disclosure mechanisms for open source projects
+[![Scorecard supply-chain security](https://github.com/scovetta/disclosure-check/actions/workflows/scorecards.yml/badge.svg)](https://github.com/scovetta/disclosure-check/actions/workflows/scorecards.yml)
+
+# Disclosure Check
+A tool for detecting disclosure mechanisms for open source projects
 
 ### Usage
 
+Download the latest .tar.gz file from the releases page.
+
 ```
-git clone https://github.com/scovetta/disclosure-check
-cd disclosure-check
-python -mvenv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-python -m disclosurecheck.check pkg:pypi/django
-
-python -m disclosurecheck.check --help
+$ pip install disclosurecheck-VERSION.tar.gz
+$ disclosurecheck --help
 
 usage: OpenSSF Vulnerability Disclosure Mechanism Detector [-h] [--verbose] [--json] package_url
 
@@ -27,4 +24,4 @@ options:
 
  ### Screenshot
 
-<img width="491" alt="Screenshot 2023-04-13 003734" src="https://user-images.githubusercontent.com/732166/231688054-e159fe50-1b2f-4fa3-bb93-70fe8947e19a.png">
+![image](https://user-images.githubusercontent.com/732166/233898773-04640a44-e3fb-4c79-9f48-8aa83287ee85.png)

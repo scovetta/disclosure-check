@@ -1,9 +1,11 @@
+from __future__ import annotations
 import re
 from functools import lru_cache
 from urllib.parse import urlparse
 
 from packageurl import PackageURL
 from urlextract import URLExtract
+from typing import Dict, List
 
 from disclosurecheck.util.context import Context
 
@@ -44,7 +46,7 @@ def sanitize_github_url(url):
     return parsed.geturl()
 
 
-def clean_contacts(contacts: list[dict]):
+def clean_contacts(contacts: List[Dict]):
     for contact in contacts:
         name = contact.get("name")
         email = contact.get("email")
