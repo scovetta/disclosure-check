@@ -48,7 +48,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
                     "priority": 70,
                     "type": "social",
                     "source": "npm registry (author/Twitter)",
-                    "value": f'twitter:{match}',
+                    "value": f"twitter:{match}",
                 }
             )
 

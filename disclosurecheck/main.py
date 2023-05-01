@@ -8,6 +8,7 @@ import sys
 import logging
 import copy
 import importlib
+from rich.logging import RichHandler
 import json
 from functools import lru_cache
 from typing import Any, List
@@ -93,7 +94,6 @@ class DisclosureCheck:
     def print_results_console(self) -> None:
         """Report results"""
         # Header
-        console.print(f"[bold white on blue]OpenSSF Disclosure Check v{VERSION}[/bold white on blue]")
         console.print("[bold green]Package URL:[/bold green]", end="")
         console.print(f"[bold white][[/bold white] [bold yellow]{self.purl}[/bold yellow] ", end="")
         console.print("[bold white]][/bold white]")
@@ -111,10 +111,17 @@ class DisclosureCheck:
         contact_seen = set()
 
         if self.context.contacts:
-            sorted_contacts = sorted(self.context.contacts, key=lambda c: c.get("priority", 0), reverse=True)
+            for contact in self.context.contacts:
+                priority = contact.get("priority")
+                if priority < 20:
+                    priority = "High"
+                elif priority < 60:
+                    priority = "Medium"
+                elif priority <= 100:
+                    priority = "Low"
+                else:
+                    priority = "Unknown"
 
-            for contact in sorted_contacts:
-                priority = contact.get("priority", "???")
                 _type = contact.get("type")
                 c = ""
                 if _type == "email":
@@ -144,7 +151,7 @@ class DisclosureCheck:
 
                 if c and c not in contact_seen:
                     contact_seen.add(c)
-                    c = f"( {priority}% ) {c}"
+                    c = f"({priority}) {c}"
                     console.print(f"  [bold yellow]*[/bold yellow] {c}")
 
         if not contact_seen:
@@ -156,8 +163,8 @@ class DisclosureCheck:
             for note in self.context.notes:
                 console.print(f"  [bold yellow]*[/bold yellow] {note}")
 
-if __name__ == '__main__':
-    logging.basicConfig(format="%(asctime)s %(levelname)s - %(name)s %(message)s")
+def start():
+    logging.basicConfig(format="%(message)s", handlers=[RichHandler()])
     logger = logging.getLogger('disclosurecheck')
     logger.setLevel(logging.ERROR)
 
@@ -179,12 +186,24 @@ if __name__ == '__main__':
     requests_cache.install_cache("disclosurecheck_cache", backend="memory", allowable_codes=[200, 404])
 
     dc = DisclosureCheck(purl)
-    dc.execute()
+    if not args.json:
+        console.print("[red]OpenSSF Presents...")
+        console.print("[bold blue]██▄   ▄█    ▄▄▄▄▄   ▄█▄    █    ████▄    ▄▄▄▄▄   ▄   █▄▄▄▄ ▄███▄       ▄█▄     ▄  █ ▄███▄   ▄█▄    █  █▀ ")
+        console.print("[bold blue]█  █  ██   █     ▀▄ █▀ ▀▄  █    █   █   █     ▀▄  █  █  ▄▀ █▀   ▀      █▀ ▀▄  █   █ █▀   ▀  █▀ ▀▄  █▄█   ")
+        console.print("[bold blue]█   █ ██ ▄  ▀▀▀▀▄   █   ▀  █    █   █ ▄  ▀▀▀▀▄ █   █ █▀▀▌  ██▄▄        █   ▀  ██▀▀█ ██▄▄    █   ▀  █▀▄   ")
+        console.print("[bold blue]█  █  ▐█  ▀▄▄▄▄▀    █▄  ▄▀ ███▄ ▀████  ▀▄▄▄▄▀  █   █ █  █  █▄   ▄▀     █▄  ▄▀ █   █ █▄   ▄▀ █▄  ▄▀ █  █  ")
+        console.print("[bold blue]███▀   ▐            ▀███▀      ▀               █▄ ▄█   █   ▀███▀       ▀███▀     █  ▀███▀   ▀███▀    █   ")
+        console.print(f"[bold blue]                         [bold yellow]v{VERSION}[bold blue]                 ▀▀▀   ▀                         ▀                   ▀    ")
+
+    try:
+        dc.execute()
+    except:
+        console.print_exception(show_locals=True)
+
     if args.json:
         print(dc.get_results_json())
     else:
         dc.print_results_console()
 
-
-
-
+if __name__ == '__main__':
+    start()

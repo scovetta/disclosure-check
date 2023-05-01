@@ -44,7 +44,7 @@ def analyze_tidelift(purl: PackageURL, context: Context):
                 "type": "tidelift",
                 "name": "Tidelift Security",
                 "value": "security@tidelift.com",
-                "evidence": [url],
+                "evidence": url,
             }
         )
     else:
@@ -61,7 +61,7 @@ def analyze_tidelift(purl: PackageURL, context: Context):
         # Handle renames, since code search 422s out
         repo_obj = gh.get_repo(f"{purl.namespace}/{purl.name}")
 
-        query = f"repo:{repo_obj.owner.login}/{repo_obj.name} tidelift.com"
+        query = f"repo:{repo_obj.owner.login}/{repo_obj.name} security@tidelift.com"
         logger.debug("Searching for [%s]", query)
         files = gh.search_code(query)
 
@@ -71,6 +71,6 @@ def analyze_tidelift(purl: PackageURL, context: Context):
                     "priority": 5,
                     "type": "tidelift",
                     "value": "security@tidelift.com",
-                    "evidence": [f.name for f in files],
+                    "evidence": ','.join([f.name for f in files]),
                 }
             )

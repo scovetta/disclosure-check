@@ -31,9 +31,6 @@ class TestEndToEndResults(unittest.TestCase):
                     dc.execute()
                     out = json.loads(dc.get_results_json())
 
-                print(json.dumps(expected_results, indent=2))
-                print(json.dumps(out, indent=2))
-
                 self.assertEqual(expected_results, out, os.path.join(root, _filename))
 
 if __name__ == '__main__':

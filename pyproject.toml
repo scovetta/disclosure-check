@@ -4,9 +4,9 @@ version = "0.0.4"
 authors = [
   { name="Michael Scovetta", email="michael.scovetta@gmail.com" },
 ]
-description = "A small example package"
+description = "Discover methods for disclosing security vulnerabilities to a project privately."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
@@ -31,11 +31,11 @@ license = {file = "LICENSE"}
 "Bug Tracker" = "https://github.com/scovetta/disclosure-check/issues"
 
 [build-system]
-requires = ["setuptools>=42", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-disclosurecheck = "disclosurecheck:main"
+disclosurecheck = "disclosurecheck.main:start"
 
 [tool.pdm.scripts]
 test = "python -m unittest discover -s tests.disclosurecheck -t ."

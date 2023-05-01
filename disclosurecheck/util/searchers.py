@@ -22,7 +22,7 @@ def find_contacts(url: str, text: str, context: Context):
             found_contacts.add(email)
             context.contacts.append(
                 {
-                    "priority": 65,
+                    "priority": 25,
                     "type": "email",
                     "source": url,
                     "name": match[0].strip(),
@@ -52,10 +52,14 @@ def find_contacts(url: str, text: str, context: Context):
 
     # Look for any URL in the file
     for _url in set(URLExtract().find_urls(text)):
+        print(_url)
         if _url.startswith("http"):
             priority = 70
             if re.match(r".*github(usercontent)?\.com/([^/]+)/\.github/.*", url, re.IGNORECASE):
-                priority = 5
+                priority = 50
+
+            if any(s in _url for s in ['security', 'vulnerability', 'reporting']):
+                priority = 10
 
             if _url == "https://tidelift.com/security":
                 context.contacts.append(
@@ -63,7 +67,7 @@ def find_contacts(url: str, text: str, context: Context):
                         "priority": 5,
                         "type": "tidelift",
                         "value": "security@tidelift.com",
-                        "source": sanitize_github_url(url),
+                        "source": url,
                     }
                 )
             else:
@@ -71,7 +75,7 @@ def find_contacts(url: str, text: str, context: Context):
                     {
                         "priority": priority,
                         "type": "url",
-                        "value": sanitize_github_url(_url),
+                        "value": _url,
                         "source": url,
                     }
                 )

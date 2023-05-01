@@ -5,7 +5,7 @@ from operator import itemgetter
 
 class Context:
     notes: List[str]
-    related_purls: List[str]
+    related_purls: List[PackageURL]
     contacts: List[Dict[str, Any]]
 
     def __init__(self):
@@ -17,7 +17,7 @@ class Context:
         self.contacts = [dict(t) for t in {tuple(d.items()) for d in self.contacts}]
         self.contacts = sorted(self.contacts, key=itemgetter('priority', 'type', 'value'))
         self.notes = sorted(set(self.notes))
-        self.related_purls = sorted(set(map(lambda s: str(s), self.related_purls)))
+        self.related_purls = sorted(set(self.related_purls))
 
         return self
 
