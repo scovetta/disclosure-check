@@ -6,8 +6,8 @@ import requests
 import yaml
 from packageurl import PackageURL
 
-from .. import Context
-from ..utils import clean_url
+from disclosurecheck.util.context import Context
+from ..util.normalize import sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,6 @@ def analyze_securityinsights(purl: PackageURL, context: Context) -> None:
             email = security_contact.get("value")
             if not email:
                 continue
-            context.contacts.append({"priority": 100, "type": "email", "source": url, "email": email})
+            context.contacts.append({"priority": 0, "type": "email", "source": url, "value": email})
     else:
         logger.warning("Error loading URL [%s]: %s", url, res.status_code)

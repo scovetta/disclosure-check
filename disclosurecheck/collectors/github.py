@@ -7,36 +7,39 @@ import requests
 from github import Github
 from packageurl import PackageURL
 
-from disclosurecheck.metadata.securityinsights import analyze_securityinsights
-from disclosurecheck.utils import find_contacts, normalize_packageurl
+from disclosurecheck.collectors.securityinsights import analyze_securityinsights
+from disclosurecheck.util.searchers import find_contacts
+from disclosurecheck.util.normalize import normalize_packageurl
 
-from .. import Context
-from ..utils import clean_url
+from disclosurecheck.util.context import Context
+from ..util.normalize import normalize_packageurl, sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
 NUGET_WEBSITE = "https://www.nuget.org"
 
-COMMON_SECURITY_MD_PATHS = set([
-	".github/security.adoc",
-	".github/security.markdown",
-	".github/security.rst",
-    ".github/security.md",
-    ".github/SECURITY.md",
-	"doc/security.rst",
-    "doc/security.md",
-	"docs/security.adoc",
-	"docs/security.markdown",
-	"docs/security.md",
-	"docs/security.rst",
-	"security.adoc",
-	"security.markdown",
-	"security.rst",
-    "security.md",
-    "Security.md",
-    "SECURITY.md",
-    "%name%.gemspec"
-])
+COMMON_SECURITY_MD_PATHS = set(
+    [
+        ".github/security.adoc",
+        ".github/security.markdown",
+        ".github/security.rst",
+        ".github/security.md",
+        ".github/SECURITY.md",
+        "doc/security.rst",
+        "doc/security.md",
+        "docs/security.adoc",
+        "docs/security.markdown",
+        "docs/security.md",
+        "docs/security.rst",
+        "security.adoc",
+        "security.markdown",
+        "security.rst",
+        "security.md",
+        "Security.md",
+        "SECURITY.md",
+        "%name%.gemspec",
+    ]
+)
 
 MAX_CONTENT_SEARCH_FILES = 30
 
@@ -62,6 +65,7 @@ def get_github_token():
 
     return token_value
 
+
 @lru_cache
 def analyze(purl: PackageURL, context: Context) -> None:
     """Identifies available disclosure mechanisms for a GitHub repository."""
@@ -76,7 +80,8 @@ def analyze(purl: PackageURL, context: Context) -> None:
         return
 
     gh = Github(github_token)
-    context.related_purls.add(normalize_packageurl(purl))
+
+    context.related_purls.append(normalize_packageurl(purl))
 
     try:
         repo_obj = gh.get_repo(f"{purl.namespace}/{purl.name}")
@@ -86,20 +91,35 @@ def analyze(purl: PackageURL, context: Context) -> None:
 
     # We probably don't want to report issues to a forked repository.
     if repo_obj.fork:
-        context.notes.add(f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] is a fork.")
+        context.notes.append(f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] is a fork.")
 
     if repo_obj.archived:
-        context.notes.add(f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] has been archived.")
+        context.notes.append(
+            f"Repository [bold blue]{purl.namespace}/{purl.name}[/bold blue] has been archived."
+        )
+    default_branch = repo_obj.default_branch
 
     _org = repo_obj.owner.login
     _repo = repo_obj.name
     if _org.lower() != purl.namespace.lower() or _repo.lower() != purl.name.lower():
-        context.notes.add(
+        context.notes.append(
             f"Repository was moved from [bold blue]{purl.namespace}/{purl.name}[/bold blue] to [bold blue]{_org}/{_repo}[/bold blue]."
         )
-        context.related_purls.add(PackageURL(type="github", namespace=_org, name=_repo))
+        context.related_purls.append(PackageURL(type="github", namespace=_org, name=_repo))
         logger.debug(f"Will resume analysis at {_org}/{_repo}.")
         return
+
+    # Check for an email address of the owner (not typical)
+    if repo_obj.owner.email:
+        context.contacts.append(
+            {
+                "priority": 25,
+                "type": "email",
+                "source": f"https://github.com/{_org}",
+                "value": repo_obj.owner.email,
+            }
+        )
+        logger.info("Found email address for repository owner: %s", repo_obj.owner.email)
 
     # Check for private vulnerability reporting
     url = f"https://github.com/{_org}/{_repo}/security/advisories"
@@ -107,9 +127,9 @@ def analyze(purl: PackageURL, context: Context) -> None:
     if "Report a vulnerability" in res.text:
         context.contacts.append(
             {
-                "priority": 100,
+                "priority": 0,
                 "type": "github_pvr",
-                "url": f"https://github.com/{_org}/{_repo}/security/advisories/new",
+                "value": f"https://github.com/{_org}/{_repo}/security/advisories/new",
                 "source": url,
             }
         )
@@ -117,12 +137,20 @@ def analyze(purl: PackageURL, context: Context) -> None:
 
     # Check for a contact in a "security.md" in a well-known place (avoid the API call to code search)
     org_purl = PackageURL(type="github", namespace=purl.namespace, name=".github")
-    for filename in COMMON_SECURITY_MD_PATHS:
-        if '%name%' in filename:
-            filename = filename.replace('%name%', purl.name)
+    try:
+        org_default_branch = gh.get_repo(f"{org_purl.namespace}/{org_purl.name}").default_branch
+        org_repo_exists = True
+    except:
+        org_default_branch = None
+        org_repo_exists = False
 
-        check_github_security_md(purl, filename, context)
-        check_github_security_md(org_purl, filename, context)
+    for filename in COMMON_SECURITY_MD_PATHS:
+        if "%name%" in filename:
+            filename = filename.replace("%name%", purl.name)
+
+        check_github_security_md(purl, filename, context, default_branch)
+        if org_repo_exists:
+            check_github_security_md(org_purl, filename, context, org_default_branch)
 
     # See if the repo supports Security Insights
     analyze_securityinsights(purl, context)
@@ -142,10 +170,10 @@ def analyze(purl: PackageURL, context: Context) -> None:
         for match in matches:
             context.contacts.append(
                 {
-                    "priority": 40,
+                    "priority": 25,
                     "type": "email",
                     "source": file.url,
-                    "email": match,
+                    "value": match,
                 }
             )
     if num_files_left == MAX_CONTENT_SEARCH_FILES:
@@ -157,7 +185,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
     # TODO
 
 
-def check_github_security_md(purl: PackageURL, filename: str, context: Context):
+def check_github_security_md(purl: PackageURL, filename: str, context: Context, default_branch="master"):
     """Checks a "SECURITY.md" file for a security contact."""
     logger.debug("Checking GitHub [%s]: %s", filename, purl)
     if purl is None:
@@ -168,10 +196,11 @@ def check_github_security_md(purl: PackageURL, filename: str, context: Context):
         logger.debug("Sorry, only GitHub is supported.")
         return
 
-    org = purl.namespace
-    repo = purl.name
+    if not purl.namespace:
+        logger.warning("Unexpected: GitHub package %s does not have a namespace.", purl)
+        return
 
-    url = f"https://raw.githubusercontent.com/{org}/{repo}/master/{filename}"
+    url = f"https://raw.githubusercontent.com/{purl.namespace}/{purl.name}/{default_branch}/{filename}"
     res = requests.get(url, timeout=30)
     if res.ok:
         find_contacts(url, res.text, context)

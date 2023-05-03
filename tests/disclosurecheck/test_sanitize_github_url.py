@@ -1,12 +1,12 @@
 import unittest
-from  disclosurecheck.utils import clean_url
+from  disclosurecheck.util.normalize import sanitize_github_url
 
-class TestCleanUrlMethods(unittest.TestCase):
+class TestSanitizeGithubUrlMethods(unittest.TestCase):
     EXPECTED_RESULTS = [
         ('foo', None),
         (None, None),
         ('https://github.com/foo/bar', 'https://github.com/foo/bar'),
-        ('https://github.com/foo/bar#quux', 'https://github.com/foof/bar'),
+        ('https://github.com/foo/bar#quux', 'https://github.com/foo/bar'),
         ('https://github.com/foo/bar?a=b', 'https://github.com/foo/bar'),
         ('https://github.com/foo/bar?a=b&c=d', 'https://github.com/foo/bar'),
         ('https://github.com/foo/bar?a=b&c=d#efg;hij.klm', 'https://github.com/foo/bar'),
@@ -37,7 +37,7 @@ class TestCleanUrlMethods(unittest.TestCase):
 
     def test(self):
         for result in self.EXPECTED_RESULTS:
-            self.assertEqual(clean_url(result[0]), result[1], result)
+            self.assertEqual(sanitize_github_url(result[0]), result[1], result)
 
 if __name__ == '__main__':
     unittest.main()

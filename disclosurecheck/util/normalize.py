@@ -7,11 +7,11 @@ from packageurl import PackageURL
 from urlextract import URLExtract
 from typing import Dict, List
 
-from disclosurecheck import Context
+from disclosurecheck.util.context import Context
 
 
 @lru_cache
-def clean_url(url):
+def sanitize_github_url(url):
     if not url:
         return None
 
@@ -26,6 +26,7 @@ def clean_url(url):
     if parsed.hostname in ["raw.github.com", "raw.githubusercontent.com", "www.github.com"]:
         parsed = parsed._replace(netloc="github.com")
 
+    # TODO: This is definitely a bug
     if parsed.hostname != "github.com":
         return None
 
@@ -67,20 +68,6 @@ def clean_contacts(contacts: List[Dict]):
         if email:
             contact["email"] = email
 
-
-def clean_url(url: str) -> str | None:
-    if not url:
-        return None
-
-    if url.startswith("github.com/"):
-        url = f"https://{url}"
-
-    if url.endswith("."):
-        url = url[:-1]
-
-    return url
-
-
 def normalize_packageurl(purl: PackageURL) -> PackageURL:
     if not purl:
         return None
@@ -91,42 +78,3 @@ def normalize_packageurl(purl: PackageURL) -> PackageURL:
     purl = purl._replace(subpath=None)
 
     return purl
-
-
-def find_contacts(url: str, text: str, context: Context):
-    """Finds contacts in a string of text."""
-    matches = set(re.findall(r"[\w.+-]+(?:@|\[at\])[\w-]+\.[\w.-]+", text))
-    for match in matches:
-        match = match.replace("[at]", "@")
-        context.contacts.append({"priority": 65, "type": "email", "source": clean_url(url), "email": match})
-
-    if "tidelift.com" in text:
-        context.contacts.append(
-            {
-                "priority": 95,
-                "type": "tidelift",
-                "contact": "security@tidelift.com",
-                "source": clean_url(url),
-            }
-        )
-
-    # Look for any URL in the file
-    for _url in set(URLExtract().find_urls(text)):
-        if _url.startswith("http"):
-            priority = 30
-            if re.match(r".*github(usercontent)?\.com/([^/]+)/\.github/.*", url, re.IGNORECASE):
-                priority = 95
-
-            if _url == 'https://tidelift.com/security':
-                context.contacts.append(
-                    {
-                        "priority": 95,
-                        "type": "tidelift",
-                        "contact": "security@tidelift.com",
-                        "source": clean_url(url),
-                    }
-                )
-            else:
-                context.contacts.append(
-                    {"priority": priority, "type": "url", "url": clean_url(_url), "source": clean_url(url)}
-                )

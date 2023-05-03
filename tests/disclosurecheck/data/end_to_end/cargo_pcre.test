@@ -1,0 +1,15 @@
+pkg:cargo/pcre
+{
+    "notes": [],
+    "contacts": [
+      {
+        "priority": 25,
+        "type": "email",
+        "source": "https://github.com/cadencemarseille",
+        "value": "cadencemarseille@gmail.com"
+      }
+    ],
+    "related_purls": [
+      "pkg:github/cadencemarseille/rust-pcre"
+    ]
+  }

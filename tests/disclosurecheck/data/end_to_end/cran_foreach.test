@@ -1,0 +1,22 @@
+pkg:cran/foreach
+{
+  "notes": [],
+  "contacts": [
+    {
+      "priority": 65,
+      "type": "email",
+      "source": "DESCRIPTION",
+      "name": "Folashade Daniel",
+      "value": "fdaniel@microsoft.com"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://github.com/RevolutionAnalytics/foreach",
+      "source": "DESCRIPTION"
+    }
+  ],
+  "related_purls": [
+    "pkg:github/revolutionanalytics/foreach"
+  ]
+}
