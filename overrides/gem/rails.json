@@ -1,0 +1,46 @@
+{
+    "match_regex": [
+        "pkg:gem\/rails(?:@.+)?"
+    ],
+    "action": "replace",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "url",
+            "value": "https://hackerone.com/rails",
+            "source": "HackerOne Bug Bounty for Ruby on Rails"
+        },
+        {
+            "priority": 1,
+            "type": "email",
+            "value": "rafaelmfranca@gmail.com",
+            "name": "Rafael França",
+            "source": "https://rubyonrails.org/security"
+        },
+        {
+            "priority": 2,
+            "type": "email",
+            "value": "jeremy@basecamp.com",
+            "name": "Jeremy Daer",
+            "source": "https://rubyonrails.org/security"
+        },
+        {
+            "priority": 3,
+            "type": "url",
+            "value": "https://discuss.rubyonrails.org/c/rubyonrails-core",
+            "source": "https://rubyonrails.org/security"
+        },
+        {
+            "priority": 4,
+            "type": "url",
+            "value": "https://discuss.rubyonrails.org/c/rubyonrails-core",
+            "source": "https://rubyonrails.org/security"
+        },
+        {
+            "priority": 4,
+            "type": "url",
+            "value": "https://discord.gg/d8N68BCw49",
+            "source": "https://rubyonrails.org/security"
+        }
+    ]
+}
