@@ -200,25 +200,15 @@ def start():
 
     dc = DisclosureCheck(purl)
     if not args.json:
+        # fmt: off
         console.print("[red]OpenSSF Presents...")
-        console.print(
-            "[bold blue]██▄   ▄█    ▄▄▄▄▄   ▄█▄    █    ████▄    ▄▄▄▄▄   ▄   █▄▄▄▄ ▄███▄       ▄█▄     ▄  █ ▄███▄   ▄█▄    █  █▀ "
-        )
-        console.print(
-            "[bold blue]█  █  ██   █     ▀▄ █▀ ▀▄  █    █   █   █     ▀▄  █  █  ▄▀ █▀   ▀      █▀ ▀▄  █   █ █▀   ▀  █▀ ▀▄  █▄█   "
-        )
-        console.print(
-            "[bold blue]█   █ ██ ▄  ▀▀▀▀▄   █   ▀  █    █   █ ▄  ▀▀▀▀▄ █   █ █▀▀▌  ██▄▄        █   ▀  ██▀▀█ ██▄▄    █   ▀  █▀▄   "
-        )
-        console.print(
-            "[bold blue]█  █  ▐█  ▀▄▄▄▄▀    █▄  ▄▀ ███▄ ▀████  ▀▄▄▄▄▀  █   █ █  █  █▄   ▄▀     █▄  ▄▀ █   █ █▄   ▄▀ █▄  ▄▀ █  █  "
-        )
-        console.print(
-            "[bold blue]███▀   ▐            ▀███▀      ▀               █▄ ▄█   █   ▀███▀       ▀███▀     █  ▀███▀   ▀███▀    █   "
-        )
-        console.print(
-            f"[bold blue]                         [bold yellow]v{VERSION}[bold blue]                 ▀▀▀   ▀                         ▀                   ▀    "
-        )
+        console.print("[bold blue]██▄   ▄█    ▄▄▄▄▄   ▄█▄    █    ████▄    ▄▄▄▄▄   ▄   █▄▄▄▄ ▄███▄       ▄█▄     ▄  █ ▄███▄   ▄█▄    █  █▀ ")
+        console.print("[bold blue]█  █  ██   █     ▀▄ █▀ ▀▄  █    █   █   █     ▀▄  █  █  ▄▀ █▀   ▀      █▀ ▀▄  █   █ █▀   ▀  █▀ ▀▄  █▄█   ")
+        console.print("[bold blue]█   █ ██ ▄  ▀▀▀▀▄   █   ▀  █    █   █ ▄  ▀▀▀▀▄ █   █ █▀▀▌  ██▄▄        █   ▀  ██▀▀█ ██▄▄    █   ▀  █▀▄   ")
+        console.print("[bold blue]█  █  ▐█  ▀▄▄▄▄▀    █▄  ▄▀ ███▄ ▀████  ▀▄▄▄▄▀  █   █ █  █  █▄   ▄▀     █▄  ▄▀ █   █ █▄   ▄▀ █▄  ▄▀ █  █  ")
+        console.print("[bold blue]███▀   ▐            ▀███▀      ▀               █▄ ▄█   █   ▀███▀       ▀███▀     █  ▀███▀   ▀███▀    █   ")
+        console.print(f"[black]OpenSSF Disclosure Check v{VERSION}[black][bold blue]                 ▀▀▀   ▀                         ▀                   ▀    ")
+        # fmt: on
 
     try:
         dc.execute()
@@ -229,7 +219,6 @@ def start():
         print(dc.get_results_json())
     else:
         dc.print_results_console()
-
 
 if __name__ == "__main__":
     start()

@@ -28,7 +28,7 @@ def check_for_overrides(purl: PackageURL, context: Context) -> bool:
 
     file_paths = []
 
-    path = os.path.join('overrides', purl.type)
+    path = os.path.join(os.path.dirname(__file__), '..', 'overrides', purl.type)
     if purl.namespace:
         path = os.path.join(path, purl.namespace)
     path = os.path.join(path, purl.name)
@@ -38,8 +38,8 @@ def check_for_overrides(purl: PackageURL, context: Context) -> bool:
     file_paths.append(path + '.json')
 
     for path in file_paths:
-        logger.debug("Looking for override file: %s", path)
-        if not os.path.abspath(path).startswith(os.path.abspath('overrides')):
+        logger.debug("Looking for override file: %s", os.path.abspath(path))
+        if not os.path.abspath(path).startswith(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'overrides'))):
             logger.warning("Attempted to load override file outside of overrides directory: %s", path)
             return False
 
