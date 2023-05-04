@@ -22,9 +22,12 @@ from disclosurecheck import collectors
 from disclosurecheck.collectors.github import analyze as analyze_github
 from disclosurecheck.collectors.librariesio import analyze_librariesio
 from disclosurecheck.collectors.packagecontent import analyze_packagecontent
+from disclosurecheck.collectors.overrides import check_for_overrides
+from disclosurecheck.collectors.ibb import analyze_ibb
 from disclosurecheck.collectors.tidelift import analyze_tidelift
 from disclosurecheck.util.normalize import clean_contacts, sanitize_github_url
 from disclosurecheck.util.context import Context
+from disclosurecheck.collectors.fallback import add_fallback_mechanisms
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -32,9 +35,10 @@ logger.setLevel(logging.ERROR)
 console = rich.console.Console(highlight=False)
 VERSION = pkg_resources.get_distribution("disclosurecheck").version
 
+
 class DisclosureCheck:
     context = None  # type: Context
-    purl = None     # type: PackageURL
+    purl = None  # type: PackageURL
 
     def __init__(self, purl: PackageURL):
         if not purl:
@@ -62,11 +66,14 @@ class DisclosureCheck:
             logger.warning("Error importing module for PackageURL type %s: %s", self.purl.type, msg)
 
         # Run package-agnostic analyzers
-        for analyzer in [analyze_librariesio, analyze_tidelift, analyze_packagecontent]:
+        for analyzer in [analyze_librariesio, analyze_tidelift, analyze_packagecontent, analyze_ibb]:
             try:
                 analyzer(self.purl, self.context)
             except Exception as msg:
                 logger.warning("Error analyzing %s using %s: %s", self.purl, analyzer.__name__, msg)
+
+        # Add fallback mechanisms
+        add_fallback_mechanisms(self.context)
 
         # For related packages (e.g. forks, repositories, etc.), analyze them
         _related_purls_copy = copy.copy(self.context.related_purls)
@@ -83,10 +90,15 @@ class DisclosureCheck:
                 analyze_github(additional_purl, self.context)
                 analyze_tidelift(additional_purl, self.context)
 
+        # Any overrides
+        for purl in self.context.related_purls:
+            check_for_overrides(purl, self.context)
+
+        check_for_overrides(self.purl, self.context)
+
         # Clean up the contacts and sort the final objects
         clean_contacts(self.context.contacts)
         self.context.sort()
-
 
     def get_results_json(self) -> str:
         return json.dumps(self.context.to_dict(), indent=2)
@@ -140,7 +152,7 @@ class DisclosureCheck:
                 elif _type == "tidelift":
                     c = "Tidelift Security <security@tidelift.com>"
 
-                elif _type == "url" and "url" in contact:
+                elif _type == "url" and "value" in contact:
                     c = contact.get("value")
 
                 elif _type == "social":
@@ -163,9 +175,10 @@ class DisclosureCheck:
             for note in self.context.notes:
                 console.print(f"  [bold yellow]*[/bold yellow] {note}")
 
+
 def start():
     logging.basicConfig(format="%(message)s", handlers=[RichHandler()])
-    logger = logging.getLogger('disclosurecheck')
+    logger = logging.getLogger("disclosurecheck")
     logger.setLevel(logging.ERROR)
 
     parser = argparse.ArgumentParser(prog="OpenSSF Vulnerability Disclosure Mechanism Detector")
@@ -187,13 +200,15 @@ def start():
 
     dc = DisclosureCheck(purl)
     if not args.json:
+        # fmt: off
         console.print("[red]OpenSSF Presents...")
         console.print("[bold blue]██▄   ▄█    ▄▄▄▄▄   ▄█▄    █    ████▄    ▄▄▄▄▄   ▄   █▄▄▄▄ ▄███▄       ▄█▄     ▄  █ ▄███▄   ▄█▄    █  █▀ ")
         console.print("[bold blue]█  █  ██   █     ▀▄ █▀ ▀▄  █    █   █   █     ▀▄  █  █  ▄▀ █▀   ▀      █▀ ▀▄  █   █ █▀   ▀  █▀ ▀▄  █▄█   ")
         console.print("[bold blue]█   █ ██ ▄  ▀▀▀▀▄   █   ▀  █    █   █ ▄  ▀▀▀▀▄ █   █ █▀▀▌  ██▄▄        █   ▀  ██▀▀█ ██▄▄    █   ▀  █▀▄   ")
         console.print("[bold blue]█  █  ▐█  ▀▄▄▄▄▀    █▄  ▄▀ ███▄ ▀████  ▀▄▄▄▄▀  █   █ █  █  █▄   ▄▀     █▄  ▄▀ █   █ █▄   ▄▀ █▄  ▄▀ █  █  ")
         console.print("[bold blue]███▀   ▐            ▀███▀      ▀               █▄ ▄█   █   ▀███▀       ▀███▀     █  ▀███▀   ▀███▀    █   ")
-        console.print(f"[bold blue]                         [bold yellow]v{VERSION}[bold blue]                 ▀▀▀   ▀                         ▀                   ▀    ")
+        console.print(f"[black]OpenSSF Disclosure Check v{VERSION}[black][bold blue]                 ▀▀▀   ▀                         ▀                   ▀    ")
+        # fmt: on
 
     try:
         dc.execute()
@@ -205,5 +220,5 @@ def start():
     else:
         dc.print_results_console()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start()

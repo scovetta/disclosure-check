@@ -18,6 +18,9 @@ def analyze_librariesio(purl: PackageURL, context: Context):
         logger.debug("Invalid PackageURL.")
         return
 
+    if purl.type == 'gem':
+        purl = purl._replace(type='rubygems')
+
     if purl.namespace:
         if purl.type == "maven":
             package_name = f"{purl.namespace}:{purl.name}"

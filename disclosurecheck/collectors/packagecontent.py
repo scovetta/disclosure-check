@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 @lru_cache
 def analyze_packagecontent(purl: PackageURL, context: Context) -> None:
-    """Checks the RubyGems registry for contact information for a package."""
-    logger.debug("Checking RubyGems project: %s", purl)
+    """Checks the package content for indicators of a reporting mechanism."""
+    logger.debug("Checking package content for project: %s", purl)
 
     temp_dir = tempfile.mkdtemp(prefix="dc-")
     res = subprocess.run(["oss-download", "-e", "-x", temp_dir, str(purl)], capture_output=True)
@@ -44,7 +44,7 @@ def analyze_file(filename: str, context: Context) -> None:
 
     if any([regex.match(filename) for regex in SEARCH_FILES]):
         try:
-            with open(filename, "r", encoding="utf-8") as f:
+            with open(filename, "r", encoding="utf-8", errors='ignore') as f:
                 content = f.read()
             find_contacts(os.path.basename(filename), content, context)
         except Exception as msg:

@@ -52,7 +52,6 @@ def find_contacts(url: str, text: str, context: Context):
 
     # Look for any URL in the file
     for _url in set(URLExtract().find_urls(text)):
-        print(_url)
         if _url.startswith("http"):
             priority = 70
             if re.match(r".*github(usercontent)?\.com/([^/]+)/\.github/.*", url, re.IGNORECASE):
