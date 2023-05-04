@@ -3,7 +3,7 @@ pkg:cran/foreach
   "notes": [],
   "contacts": [
     {
-      "priority": 65,
+      "priority": 25,
       "type": "email",
       "source": "DESCRIPTION",
       "name": "Folashade Daniel",
@@ -14,6 +14,30 @@ pkg:cran/foreach
       "type": "url",
       "value": "https://github.com/RevolutionAnalytics/foreach",
       "source": "DESCRIPTION"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://github.com/RevolutionAnalytics/foreach/issues",
+      "source": "DESCRIPTION"
+    },
+    {
+      "priority": 95,
+      "type": "url",
+      "value": "https://snyk.io/vulnerability-disclosure/",
+      "source": "Snyk Vulnerability Disclosure Program"
+    },
+    {
+      "priority": 95,
+      "type": "url",
+      "value": "https://www.kb.cert.org/vuls/report/",
+      "source": "CERT/CC Vulnerability Reporting Form"
+    },
+    {
+      "priority": 98,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
     }
   ],
   "related_purls": [

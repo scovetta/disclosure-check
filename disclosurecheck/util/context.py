@@ -25,5 +25,5 @@ class Context:
         return {
             "notes": self.notes,
             "contacts": self.contacts,
-            "related_purls": [str(s) for s in self.related_purls]
+            "related_purls": list(sorted(set(str(s) for s in self.related_purls)))
         }
