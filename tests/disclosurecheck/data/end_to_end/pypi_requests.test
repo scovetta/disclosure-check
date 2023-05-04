@@ -11,20 +11,50 @@ pkg:pypi/requests
     {
       "priority": 65,
       "type": "email",
-      "source": "https://github.com/psf/requests",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md",
       "value": "nate.prewitt@gmail.com"
     },
     {
       "priority": 65,
       "type": "email",
-      "source": "https://github.com/psf/requests",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md",
       "value": "sethmichaellarson@gmail.com"
     },
     {
       "priority": 70,
       "type": "url",
-      "value": null,
-      "source": "https://github.com/psf/requests"
+      "value": "https://keybase.io",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://keybase.io/nateprewitt)",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://keybase.io/sethmlarson)",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md"
+    },
+    {
+      "priority": 95,
+      "type": "url",
+      "value": "https://snyk.io/vulnerability-disclosure/",
+      "source": "Snyk Vulnerability Disclosure Program"
+    },
+    {
+      "priority": 95,
+      "type": "url",
+      "value": "https://www.kb.cert.org/vuls/report/",
+      "source": "CERT/CC Vulnerability Reporting Form"
+    },
+    {
+      "priority": 98,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
     }
   ],
   "related_purls": [
