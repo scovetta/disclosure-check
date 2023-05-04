@@ -24,5 +24,5 @@ requests==2.29.0
 rich==13.3.3
 termcolor==2.2.0
 tomli==2.0.1
-urllib3==1.26.15
+urllib3==2.0.1
 wrapt==1.15.0
