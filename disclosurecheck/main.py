@@ -49,6 +49,7 @@ class DisclosureCheck:
 
     def execute(self):
         # Get the analyzer function based on the PackageURL type
+        logger.debug("Starting execution for %s", self.purl)
         try:
             importlib.import_module(f"disclosurecheck.collectors.{self.purl.type}")
             if hasattr(collectors, self.purl.type):

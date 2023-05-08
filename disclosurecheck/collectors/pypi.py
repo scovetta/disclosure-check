@@ -5,7 +5,7 @@ from functools import lru_cache
 import requests
 from packageurl import PackageURL
 
-from disclosurecheck.util.searchers import normalize_packageurl
+from disclosurecheck.util.normalize import normalize_packageurl
 
 from disclosurecheck.util.context import Context
 from ..util.searchers import sanitize_github_url
