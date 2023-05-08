@@ -1,7 +1,7 @@
 import re
 from functools import lru_cache
 from urllib.parse import urlparse
-
+import logging
 from packageurl import PackageURL
 from urlextract import URLExtract
 
@@ -9,6 +9,7 @@ from disclosurecheck.util.context import Context
 
 from .normalize import sanitize_github_url
 
+logger = logging.getLogger(__name__)
 
 def find_contacts(url: str, text: str, context: Context):
     """Finds contacts in a string of text."""
@@ -37,7 +38,7 @@ def find_contacts(url: str, text: str, context: Context):
         if match not in found_contacts:
             found_contacts.add(match)
             context.contacts.append(
-                {"priority": 65, "type": "email", "source": url, "value": match}
+                {"priority": 35, "type": "email", "source": url, "value": match}
             )
 
     if "tidelift.com" in text:
@@ -59,6 +60,10 @@ def find_contacts(url: str, text: str, context: Context):
 
             if any(s in _url for s in ['security', 'vulnerability', 'reporting']):
                 priority = 10
+
+            if re.match(r".*\/github\.com/([^/]+)$", _url, re.IGNORECASE):
+                logger.debug("Found a bare GitHub profile, ignoring.")
+                continue
 
             if _url == "https://tidelift.com/security":
                 context.contacts.append(
