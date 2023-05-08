@@ -10,7 +10,7 @@ def add_fallback_mechanisms(context: Context) -> None:
 
     context.contacts.append(
         {
-            "priority": 95,
+            "priority": 100,
             "type": "url",
             "value": "https://www.kb.cert.org/vuls/report/",
             "source": "CERT/CC Vulnerability Reporting Form",
@@ -19,7 +19,7 @@ def add_fallback_mechanisms(context: Context) -> None:
 
     context.contacts.append(
         {
-            "priority": 95,
+            "priority": 100,
             "type": "url",
             "value": "https://snyk.io/vulnerability-disclosure/",
             "source": "Snyk Vulnerability Disclosure Program",
@@ -28,7 +28,7 @@ def add_fallback_mechanisms(context: Context) -> None:
 
     context.contacts.append(
         {
-            "priority": 98,
+            "priority": 100,
             "type": "email",
             "value": "securitylab@github.com",
             "source": "https://securitylab.github.com/",
