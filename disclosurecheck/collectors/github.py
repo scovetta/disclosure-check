@@ -1,3 +1,5 @@
+from multiprocessing.pool import ThreadPool
+from multiprocessing import cpu_count
 import logging
 import os
 import re
@@ -144,13 +146,15 @@ def analyze(purl: PackageURL, context: Context) -> None:
         org_default_branch = None
         org_repo_exists = False
 
+    # NEW
+    _args = []
     for filename in COMMON_SECURITY_MD_PATHS:
         if "%name%" in filename:
             filename = filename.replace("%name%", purl.name)
-
-        check_github_security_md(purl, filename, context, default_branch)
+        _args.append((purl, filename, context, default_branch))
         if org_repo_exists:
-            check_github_security_md(org_purl, filename, context, org_default_branch)
+            _args.append((org_purl, filename, context, org_default_branch))
+    r = ThreadPool(cpu_count() * 2).imap_unordered(_check_github_security_md, _args)
 
     # See if the repo supports Security Insights
     analyze_securityinsights(purl, context)
@@ -184,6 +188,19 @@ def analyze(purl: PackageURL, context: Context) -> None:
     # top_committers = repo_obj.get_contributors(order="desc", anon="true")
     # TODO
 
+
+def _check_github_security_md(args):
+    """Checks a "SECURITY.md" file for a security contact.
+    Called by thread pool, not intended for external usage, use check_github_security_md() instead."""
+    if not args:
+        return None
+
+    purl = args[0]
+    filename = args[1]
+    context = args[2]
+    default_branch = args[3] if len(args) > 3 else "master"
+
+    return check_github_security_md(purl, filename, context, default_branch)
 
 def check_github_security_md(purl: PackageURL, filename: str, context: Context, default_branch="master"):
     """Checks a "SECURITY.md" file for a security contact."""

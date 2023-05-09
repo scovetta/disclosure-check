@@ -44,7 +44,7 @@ class DisclosureCheck:
         if not purl:
             raise ValueError(f"purl [{purl}] is not a valid PackageURL.")
 
-        self.context = Context()
+        self.context = Context(purl)
         self.purl = purl
 
     def execute(self):
@@ -140,7 +140,7 @@ class DisclosureCheck:
                 _type = contact.get("type")
                 c = ""
                 if _type == "email":
-                    if "name" in contact:
+                    if "name" in contact and contact["name"]:
                         if "value" in contact:
                             c = f'{contact["name"]} <{contact["value"]}>'
                     elif "value" in contact:
