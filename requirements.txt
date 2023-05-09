@@ -21,6 +21,10 @@ PyYAML==6.0
 requests==2.30.0
 requests-cache==1.0.1
 rich==13.3.5
+six==1.16.0
+uritools==4.0.1
+url-normalize==1.4.3
+urlextract==1.8.0
 termcolor==2.3.0
 tomli==2.0.1
 six==1.16.0
