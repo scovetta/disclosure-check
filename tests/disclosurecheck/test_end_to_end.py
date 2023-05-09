@@ -14,6 +14,8 @@ logging.getLogger().setLevel(logging.DEBUG)
 
 class TestEndToEndResults(unittest.TestCase):
     def test(self):
+        self.maxDiff = 32768
+
         # Walk through files in data
         for root, dirs, files in os.walk("tests/disclosurecheck/data"):
             for _filename in files:

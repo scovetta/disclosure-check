@@ -1,6 +1,6 @@
 pkg:cran/foreach
 {
-  "notes": [],
+  "package_url": "pkg:cran/foreach",
   "contacts": [
     {
       "priority": 25,
@@ -22,25 +22,26 @@ pkg:cran/foreach
       "source": "DESCRIPTION"
     },
     {
-      "priority": 95,
+      "priority": 100,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
+    },
+    {
+      "priority": 100,
       "type": "url",
       "value": "https://snyk.io/vulnerability-disclosure/",
       "source": "Snyk Vulnerability Disclosure Program"
     },
     {
-      "priority": 95,
+      "priority": 100,
       "type": "url",
       "value": "https://www.kb.cert.org/vuls/report/",
       "source": "CERT/CC Vulnerability Reporting Form"
-    },
-    {
-      "priority": 98,
-      "type": "email",
-      "value": "securitylab@github.com",
-      "source": "https://securitylab.github.com/"
     }
   ],
   "related_purls": [
     "pkg:github/revolutionanalytics/foreach"
-  ]
+  ],
+  "notes": []
 }

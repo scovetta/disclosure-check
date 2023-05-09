@@ -1,10 +1,6 @@
 pkg:npm/left-pad
 {
-  "notes": [
-    "Repository [bold blue]left-pad/left-pad[/bold blue] has been archived.",
-    "Repository [bold blue]stevemao/left-pad[/bold blue] has been archived.",
-    "Repository was moved from [bold blue]stevemao/left-pad[/bold blue] to [bold blue]left-pad/left-pad[/bold blue]."
-  ],
+  "package_url": "pkg:npm/left-pad",
   "contacts": [
     {
       "priority": 10,
@@ -35,26 +31,31 @@ pkg:npm/left-pad
       "value": "maochenyan@gmail.com"
     },
     {
-      "priority": 95,
+      "priority": 100,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
+    },
+    {
+      "priority": 100,
       "type": "url",
       "value": "https://snyk.io/vulnerability-disclosure/",
       "source": "Snyk Vulnerability Disclosure Program"
     },
     {
-      "priority": 95,
+      "priority": 100,
       "type": "url",
       "value": "https://www.kb.cert.org/vuls/report/",
       "source": "CERT/CC Vulnerability Reporting Form"
-    },
-    {
-      "priority": 98,
-      "type": "email",
-      "value": "securitylab@github.com",
-      "source": "https://securitylab.github.com/"
     }
   ],
   "related_purls": [
     "pkg:github/left-pad/left-pad",
     "pkg:github/stevemao/left-pad"
+  ],
+  "notes": [
+    "Repository left-pad/left-pad has been archived.",
+    "Repository stevemao/left-pad has been archived.",
+    "Repository was moved from stevemao/left-pad to left-pad/left-pad."
   ]
 }
