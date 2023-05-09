@@ -1,6 +1,6 @@
 [project]
 name = "disclosurecheck"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
   { name="Michael Scovetta", email="michael.scovetta@gmail.com" },
 ]
@@ -10,7 +10,7 @@ requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: Apache License",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
 dependencies = [

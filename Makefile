@@ -12,7 +12,7 @@ build: clean
 	@echo "Initializing environment..."
 	python -mvenv _tmpvenv
 	source _tmpvenv/bin/activate
-	pip install -r requirements.txt -r dev-requirements.txt
+	pip install -r requirements.txt
 
 	@echo "Building distribution..."
 	python -mbuild .
