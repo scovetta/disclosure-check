@@ -3,13 +3,13 @@ import re
 from functools import lru_cache
 
 import requests
-from github import Github
+from github import Github, UnknownObjectException
 from packageurl import PackageURL
 
-from disclosurecheck import Context
-from disclosurecheck.packagemanagers.github import get_github_token
+from disclosurecheck.util.context import Context
+from disclosurecheck.collectors.github import get_github_token
 
-from ..utils import clean_url
+from ..util.searchers import sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +40,11 @@ def analyze_tidelift(purl: PackageURL, context: Context):
     if res.ok:
         context.contacts.append(
             {
-                "priority": 95,
+                "priority": 5,
                 "type": "tidelift",
                 "name": "Tidelift Security",
-                "email": "security@tidelift.com",
-                "evidence": [url],
+                "value": "security@tidelift.com",
+                "evidence": url,
             }
         )
     else:
@@ -59,18 +59,22 @@ def analyze_tidelift(purl: PackageURL, context: Context):
 
         gh = Github(github_token)
         # Handle renames, since code search 422s out
-        repo_obj = gh.get_repo(f"{purl.namespace}/{purl.name}")
+        try:
+            repo_obj = gh.get_repo(f"{purl.namespace}/{purl.name}")
+        except UnknownObjectException:
+            logger.warning("Unable to find repository [%s]", purl)
+            return
 
-        query = f"repo:{repo_obj.owner.login}/{repo_obj.name} tidelift.com"
+        query = f"repo:{repo_obj.owner.login}/{repo_obj.name} security@tidelift.com"
         logger.debug("Searching for [%s]", query)
         files = gh.search_code(query)
 
         if files.totalCount:
             context.contacts.append(
                 {
-                    "priority": 95,
+                    "priority": 5,
                     "type": "tidelift",
-                    "contact": "security@tidelift.com",
-                    "evidence": [f.name for f in files],
+                    "value": "security@tidelift.com",
+                    "evidence": ','.join([f.name for f in files]),
                 }
             )

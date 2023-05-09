@@ -5,10 +5,10 @@ from functools import lru_cache
 import requests
 from packageurl import PackageURL
 
-from disclosurecheck.utils import normalize_packageurl
-
-from .. import Context
-from ..utils import clean_url
+from disclosurecheck.util.normalize import normalize_packageurl
+from disclosurecheck.util.searchers import extract_emails
+from disclosurecheck.util.context import Context
+from ..util.searchers import sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -46,27 +46,28 @@ def analyze(purl: PackageURL, context: Context) -> None:
             name = data.get(prefix)
             email = data.get(f"{prefix}_email")
             if email:
-                logger.debug("Found an e-mail address (%s)", email)
-                context.contacts.append(
-                    {
-                        "priority": 80,
-                        "type": "email",
-                        "source": f"pypi registry ({prefix})",
-                        "name": name,
-                        "email": email,
-                    }
-                )
+                for _email in extract_emails(email):
+                    logger.debug("Found an e-mail address (%s)", _email)
+                    context.contacts.append(
+                        {
+                            "priority": 20,
+                            "type": "email",
+                            "source": f"pypi registry ({prefix})",
+                            "name": name,
+                            "value": _email,
+                        }
+                    )
 
         # All of the places a GitHub URL could hide within PyPI package metadata
         urls = [
-            clean_url(data.get("package_url")),
-            clean_url(data.get("project_url")),
-            clean_url(data.get("project_urls", {}).get("Homepage")),
-            clean_url(data.get("project_urls", {}).get("Bug Tracker")),
-            clean_url(data.get("project_urls", {}).get("CI")),
-            clean_url(data.get("project_urls", {}).get("Source")),
-            clean_url(data.get("project_urls", {}).get("Source Code")),
-            clean_url(data.get("project_urls", {}).get("Tracker")),
+            sanitize_github_url(data.get("package_url")),
+            sanitize_github_url(data.get("project_url")),
+            sanitize_github_url(data.get("project_urls", {}).get("Homepage")),
+            sanitize_github_url(data.get("project_urls", {}).get("Bug Tracker")),
+            sanitize_github_url(data.get("project_urls", {}).get("CI")),
+            sanitize_github_url(data.get("project_urls", {}).get("Source")),
+            sanitize_github_url(data.get("project_urls", {}).get("Source Code")),
+            sanitize_github_url(data.get("project_urls", {}).get("Tracker")),
         ]
 
         # Search for GitHub URLs
@@ -76,7 +77,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
             logger.debug("Found a URL (%s)", url)
             matches = re.match(r".*github\.com/([^/]+)/([^/]+)?", url, re.IGNORECASE)
             if matches:
-                context.related_purls.add(
+                context.related_purls.append(
                     normalize_packageurl(
                         PackageURL.from_string("pkg:github/" + matches.group(1) + "/" + matches.group(2))
                     )

@@ -1,0 +1,47 @@
+pkg:cran/foreach
+{
+  "package_url": "pkg:cran/foreach",
+  "contacts": [
+    {
+      "priority": 25,
+      "type": "email",
+      "source": "DESCRIPTION",
+      "name": "Folashade Daniel",
+      "value": "fdaniel@microsoft.com"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://github.com/RevolutionAnalytics/foreach",
+      "source": "DESCRIPTION"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://github.com/RevolutionAnalytics/foreach/issues",
+      "source": "DESCRIPTION"
+    },
+    {
+      "priority": 100,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://snyk.io/vulnerability-disclosure/",
+      "source": "Snyk Vulnerability Disclosure Program"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://www.kb.cert.org/vuls/report/",
+      "source": "CERT/CC Vulnerability Reporting Form"
+    }
+  ],
+  "related_purls": [
+    "pkg:github/revolutionanalytics/foreach"
+  ],
+  "notes": []
+}

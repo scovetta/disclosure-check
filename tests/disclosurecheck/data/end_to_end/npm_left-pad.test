@@ -1,0 +1,61 @@
+pkg:npm/left-pad
+{
+  "package_url": "pkg:npm/left-pad",
+  "contacts": [
+    {
+      "priority": 10,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "westlac",
+      "value": "cameron.westland@autodesk.com"
+    },
+    {
+      "priority": 10,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "stevemao",
+      "value": "maochenyan@gmail.com"
+    },
+    {
+      "priority": 10,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "sebmck",
+      "value": "sebmck@gmail.com"
+    },
+    {
+      "priority": 15,
+      "type": "email",
+      "source": "npm registry (_npmUser)",
+      "name": "stevemao",
+      "value": "maochenyan@gmail.com"
+    },
+    {
+      "priority": 100,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://snyk.io/vulnerability-disclosure/",
+      "source": "Snyk Vulnerability Disclosure Program"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://www.kb.cert.org/vuls/report/",
+      "source": "CERT/CC Vulnerability Reporting Form"
+    }
+  ],
+  "related_purls": [
+    "pkg:github/left-pad/left-pad",
+    "pkg:github/stevemao/left-pad"
+  ],
+  "notes": [
+    "Repository left-pad/left-pad has been archived.",
+    "Repository stevemao/left-pad has been archived.",
+    "Repository was moved from stevemao/left-pad to left-pad/left-pad."
+  ]
+}

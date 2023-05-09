@@ -4,6 +4,8 @@
 
 Disclosure Check is a tool for identifying vulnerability disclosure mechanisms for open source projects.
 
+![disclosure-check](https://user-images.githubusercontent.com/732166/236118411-f69f85cf-d10a-45a7-b4cf-e9c6b4171788.gif)
+
 ## Why the tool is needed
 
 Most open source projects use a public issuer tracker for inbound requests, bug reports, etc. Since this is inappropriate
@@ -44,21 +46,18 @@ You should always install packages like this in a virtual environment since inst
 
 ### Docker
 
-You can install the Docker image from Docker Hub:
+You can create a local Docker image by running:
 
 ```
-docker pull disclosurecheck:latest
+docker build -t disclosurecheck:latest .
 ```
-
-The Docker project includes all dependencies, including OSS Gadget.
 
 ## Usage
 
 To run Disclosure Check:
 
 ```
-$ pip install disclosurecheck-VERSION.tar.gz
-$ disclosurecheck --help
+disclosurecheck --help
 
 usage: OpenSSF Vulnerability Disclosure Mechanism Detector [-h] [--verbose] [--json] package_url
 
@@ -70,7 +69,3 @@ options:
   --verbose    Show extra logging.
   --json       Output as JSON.
  ```
-
- ### Screenshot
-
-![image](https://user-images.githubusercontent.com/732166/233898773-04640a44-e3fb-4c79-9f48-8aa83287ee85.png)

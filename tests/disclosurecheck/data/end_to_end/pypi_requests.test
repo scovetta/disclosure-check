@@ -1,0 +1,71 @@
+pkg:pypi/requests
+{
+  "package_url": "pkg:pypi/requests",
+  "contacts": [
+    {
+      "priority": 0,
+      "type": "github_pvr",
+      "value": "https://github.com/psf/requests/security/advisories/new",
+      "source": "https://github.com/psf/requests/security/advisories"
+    },
+    {
+      "priority": 20,
+      "type": "email",
+      "source": "pypi registry (author)",
+      "name": "Kenneth Reitz",
+      "value": "me@kennethreitz.org"
+    },
+    {
+      "priority": 35,
+      "type": "email",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md",
+      "value": "nate.prewitt@gmail.com"
+    },
+    {
+      "priority": 35,
+      "type": "email",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md",
+      "value": "sethmichaellarson@gmail.com"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://keybase.io",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://keybase.io/nateprewitt)",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md"
+    },
+    {
+      "priority": 70,
+      "type": "url",
+      "value": "https://keybase.io/sethmlarson)",
+      "source": "https://raw.githubusercontent.com/psf/requests/main/.github/SECURITY.md"
+    },
+    {
+      "priority": 100,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://snyk.io/vulnerability-disclosure/",
+      "source": "Snyk Vulnerability Disclosure Program"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://www.kb.cert.org/vuls/report/",
+      "source": "CERT/CC Vulnerability Reporting Form"
+    }
+  ],
+  "related_purls": [
+    "pkg:github/psf/requests"
+  ],
+  "notes": []
+}
