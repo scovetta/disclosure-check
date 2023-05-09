@@ -33,7 +33,10 @@ the later becomes a reality, this tool will no longer be useful.
 
 Disclosure Check is available through PyPI and Docker Hub. If you install through PyPI, you'll also need to install
 [OSS Gadget](https://github.com/Microsoft/OSSGadget), which is needed to download the package contents for analysis.
+Ensure that oss-download is in your path.
 
+You'll also need a GitHub token to allow Disclosure Check to use the GitHub API for things like code search. The
+token does not require any special permissions, and the tool will run without it, albeit with degraded functionality.
 
 ### PyPI
 
@@ -51,10 +54,10 @@ You should always install packages like this in a virtual environment since inst
 
 ### Docker
 
-You can create a local Docker image by running:
+You can pull the latest Docker image from the GitHub Container Registry:
 
 ```
-docker build -t disclosurecheck:latest .
+docker pull ghcr.io/scovetta/disclosurecheck:latest
 ```
 
 ## Usage
@@ -74,6 +77,12 @@ options:
   --verbose    Show extra logging.
   --json       Output as JSON.
  ```
+
+Or if you're using the Docker image:
+
+```
+docker run -e GITHUB_TOKEN=<YOUR GITHUB TOKEN> --rm -t ghcr.io/scovetta/disclosurecheck:latest pkg:npm/left-pad
+```
 
 ## How it Works
 
