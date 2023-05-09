@@ -1,6 +1,6 @@
 [project]
 name = "disclosurecheck"
-version = "0.0.4"
+version = "0.0.5"
 authors = [
   { name="Michael Scovetta", email="michael.scovetta@gmail.com" },
 ]
