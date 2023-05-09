@@ -17,6 +17,7 @@ from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 
+@lru_cache
 def check_for_overrides(purl: PackageURL, context: Context) -> bool:
     """Checks to see if an override file exists, and if so, processes it.
     If an override was processed, return should be True, otherwise False.

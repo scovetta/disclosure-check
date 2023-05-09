@@ -49,15 +49,15 @@ def sanitize_github_url(url):
 def clean_contacts(contacts: List[Dict]):
     for contact in contacts:
         name = contact.get("name")
-        email = contact.get("email")
+        email = contact.get("value")
 
-        if email is not None and name in [None, "", "None", "null", "NULL"]:
+        if email not in [None, ""] and name in [None, "", "None", "null", "NULL"]:
             matches = re.match(r"^(.*)<([\w.+-]+@[\w-]+\.[\w.-]+)>\s*$", email)
             if matches:
                 name = matches.group(1).strip()
                 email = matches.group(2).strip()
 
-        if name is not None and email in [None, "", "None", "null", "NULL"]:
+        if name not in [None, ""] and email in [None, "", "None", "null", "NULL"]:
             matches = re.match(r"^(.*)<([\w.+-]+@[\w-]+\.[\w.-]+)>\s*$", name)
             if matches:
                 name = matches.group(1).strip()
@@ -66,7 +66,11 @@ def clean_contacts(contacts: List[Dict]):
         if name:
             contact["name"] = name
         if email:
-            contact["email"] = email
+            contact["value"] = email
+
+        if '@googlegroups.com' in email:
+            contact["priority"] = 99
+
 
 def normalize_packageurl(purl: PackageURL) -> PackageURL:
     if not purl:
