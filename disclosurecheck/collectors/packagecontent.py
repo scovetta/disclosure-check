@@ -20,11 +20,16 @@ logger = logging.getLogger(__name__)
 def analyze_packagecontent(purl: PackageURL, context: Context) -> None:
     """Checks the package content for indicators of a reporting mechanism."""
     logger.debug("Checking package content for project: %s", purl)
-
     temp_dir = tempfile.mkdtemp(prefix="dc-")
     temp_env = os.environ.copy()
-    temp_env["GIT_TERMINAL_PROMPT"] = 0
-    res = subprocess.run(["oss-download", "-e", "-x", temp_dir, str(purl)], capture_output=True, env=temp_env)
+    temp_env["GIT_TERMINAL_PROMPT"] = "0"
+
+    try:
+        res = subprocess.run(["oss-download", "-e", "-x", temp_dir, str(purl)], capture_output=True, env=temp_env)
+    except Exception as msg:
+        logger.error(f"Error running oss-download, is it installed?: %s", msg)
+        return
+
     if res.returncode == 0:
         for root, dirs, files in os.walk(temp_dir):
             for file in files:
