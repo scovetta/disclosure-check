@@ -44,11 +44,12 @@ class DisclosureCheck:
         if not purl:
             raise ValueError(f"purl [{purl}] is not a valid PackageURL.")
 
-        self.context = Context()
+        self.context = Context(purl)
         self.purl = purl
 
     def execute(self):
         # Get the analyzer function based on the PackageURL type
+        logger.debug("Starting execution for %s", self.purl)
         try:
             importlib.import_module(f"disclosurecheck.collectors.{self.purl.type}")
             if hasattr(collectors, self.purl.type):
@@ -113,7 +114,7 @@ class DisclosureCheck:
         # Resources
         console.print("[bold green]Related Projects:[/bold green]")
         if self.context.related_purls:
-            for related_purl in self.context.related_purls:
+            for related_purl in set(map(lambda s: str(s), self.context.related_purls)):
                 console.print(f"  [bold yellow]*[/bold yellow] {related_purl}")
         else:
             console.print("  [cyan]No repositories found.[/cyan]")
@@ -129,15 +130,17 @@ class DisclosureCheck:
                     priority = "High"
                 elif priority < 60:
                     priority = "Medium"
-                elif priority <= 100:
+                elif priority < 100:
                     priority = "Low"
+                elif priority == 100:
+                    priority = "Generic"
                 else:
                     priority = "Unknown"
 
                 _type = contact.get("type")
                 c = ""
                 if _type == "email":
-                    if "name" in contact:
+                    if "name" in contact and contact["name"]:
                         if "value" in contact:
                             c = f'{contact["name"]} <{contact["value"]}>'
                     elif "value" in contact:

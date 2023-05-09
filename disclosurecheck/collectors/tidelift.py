@@ -3,7 +3,7 @@ import re
 from functools import lru_cache
 
 import requests
-from github import Github
+from github import Github, UnknownObjectException
 from packageurl import PackageURL
 
 from disclosurecheck.util.context import Context
@@ -59,7 +59,11 @@ def analyze_tidelift(purl: PackageURL, context: Context):
 
         gh = Github(github_token)
         # Handle renames, since code search 422s out
-        repo_obj = gh.get_repo(f"{purl.namespace}/{purl.name}")
+        try:
+            repo_obj = gh.get_repo(f"{purl.namespace}/{purl.name}")
+        except UnknownObjectException:
+            logger.warning("Unable to find repository [%s]", purl)
+            return
 
         query = f"repo:{repo_obj.owner.login}/{repo_obj.name} security@tidelift.com"
         logger.debug("Searching for [%s]", query)

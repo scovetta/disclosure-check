@@ -5,8 +5,8 @@ from functools import lru_cache
 import requests
 from packageurl import PackageURL
 
-from disclosurecheck.util.searchers import normalize_packageurl
-
+from disclosurecheck.util.normalize import normalize_packageurl
+from disclosurecheck.util.searchers import extract_emails
 from disclosurecheck.util.context import Context
 from ..util.searchers import sanitize_github_url
 
@@ -46,16 +46,17 @@ def analyze(purl: PackageURL, context: Context) -> None:
             name = data.get(prefix)
             email = data.get(f"{prefix}_email")
             if email:
-                logger.debug("Found an e-mail address (%s)", email)
-                context.contacts.append(
-                    {
-                        "priority": 20,
-                        "type": "email",
-                        "source": f"pypi registry ({prefix})",
-                        "name": name,
-                        "value": email,
-                    }
-                )
+                for _email in extract_emails(email):
+                    logger.debug("Found an e-mail address (%s)", _email)
+                    context.contacts.append(
+                        {
+                            "priority": 20,
+                            "type": "email",
+                            "source": f"pypi registry ({prefix})",
+                            "name": name,
+                            "value": _email,
+                        }
+                    )
 
         # All of the places a GitHub URL could hide within PyPI package metadata
         urls = [
