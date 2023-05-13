@@ -13,8 +13,13 @@ from .normalize import sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
+IGNORE_URLS = [
+    re.compile(r'/CHANGELOG.md$', re.IGNORECASE),
+    re.compile(r'/issues$'),
+    re.compile(r'github\.com/[^/]+/[^/]+/?$'),
+]
 
-def find_contacts(url: str, text: str, context: Context):
+def find_contacts(url: str, text: str, context: Context, priority=25):
     """Finds contacts in a string of text."""
     found_contacts = set()
 
@@ -26,7 +31,7 @@ def find_contacts(url: str, text: str, context: Context):
             found_contacts.add(email)
             context.contacts.append(
                 {
-                    "priority": 25,
+                    "priority": priority,
                     "type": "email",
                     "source": url,
                     "name": match[0].strip(),
@@ -35,12 +40,10 @@ def find_contacts(url: str, text: str, context: Context):
             )
 
     # Bare e-mail addresses
-    matches = set(re.findall(r"[\w.+-]+(?:@|\[at\])[\w-]+\.[\w.-]+", text))
-    for match in matches:
-        match = match.replace("[at]", "@")
-        if match not in found_contacts:
-            found_contacts.add(match)
-            context.contacts.append({"priority": 35, "type": "email", "source": url, "value": match})
+    for email in extract_emails(text + " " + text.replace("[at]", "@")):
+        if email not in found_contacts:
+            found_contacts.add(email)
+            context.contacts.append({"priority": priority, "type": "email", "source": url, "value": email})
 
     if "tidelift.com" in text:
         context.contacts.append(
@@ -60,13 +63,16 @@ def find_contacts(url: str, text: str, context: Context):
                 priority = 50
 
             if any(s in _url for s in ["security", "vulnerability", "reporting"]):
-                priority = 10
+                priority = 11
 
             if re.match(r".*/github\.com/([^/]+)$", _url, re.IGNORECASE):
                 logger.debug("Found a bare GitHub profile, ignoring.")
 
             elif re.match(r".*github\.com/.*/tags[/)\]\.]*$", _url):
                 logger.debug("Found a tags page, ignoring.")
+
+            elif any(regex.search(_url) for regex in IGNORE_URLS):
+                logger.debug("Ignoring URL %s", _url)
 
             elif re.match(r".*/security/advisories/new$", _url):
                 context.contacts.append(

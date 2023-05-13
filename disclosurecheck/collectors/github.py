@@ -38,8 +38,14 @@ COMMON_SECURITY_MD_PATHS = set(
         "security.rst",
         "security.md",
         "Security.md",
-        "SECURITY.md",
+        "SECURITY.md"
+    ]
+)
+COMMON_OTHER_FILE_PATHS = set(
+    [
         "%name%.gemspec",
+        "Cargo.toml",
+        "LICENSE"
     ]
 )
 
@@ -146,14 +152,22 @@ def analyze(purl: PackageURL, context: Context) -> None:
         org_default_branch = None
         org_repo_exists = False
 
-    # NEW
     _args = []
     for filename in COMMON_SECURITY_MD_PATHS:
         if "%name%" in filename:
             filename = filename.replace("%name%", purl.name)
-        _args.append((purl, filename, context, default_branch))
+        _args.append((purl, filename, context, default_branch, 10))
         if org_repo_exists:
-            _args.append((org_purl, filename, context, org_default_branch))
+            _args.append((org_purl, filename, context, org_default_branch, 10))
+    r = ThreadPool(cpu_count() * 2).imap_unordered(_check_github_security_md, _args)
+
+    args = []
+    for filename in COMMON_OTHER_FILE_PATHS:
+        if "%name%" in filename:
+            filename = filename.replace("%name%", purl.name)
+        _args.append((purl, filename, context, default_branch, 35))
+        if org_repo_exists:
+            _args.append((org_purl, filename, context, org_default_branch, 35))
     r = ThreadPool(cpu_count() * 2).imap_unordered(_check_github_security_md, _args)
 
     # See if the repo supports Security Insights
@@ -161,7 +175,9 @@ def analyze(purl: PackageURL, context: Context) -> None:
 
     # Try searching for security.md files and related
     logger.debug("Executing GitHub code search to find SECURITY.md or similar files.")
-    files = gh.search_code(f"repo:{_org}/{_repo} path:/(^|\/)(readme|security)(\.(md|rst|txt))?$/i")
+    files = gh.search_code(f"repo:{_org}/{_repo} path:/(^|\\/)(readme|security)\\.(md|rst|txt)?$/")
+
+    logger.debug("Found %d files", files.totalCount)
 
     num_files_left = MAX_CONTENT_SEARCH_FILES
     for file in files:
@@ -199,10 +215,11 @@ def _check_github_security_md(args):
     filename = args[1]
     context = args[2]
     default_branch = args[3] if len(args) > 3 else "master"
+    priority = args[4] if len(args) > 4 else 25
 
-    return check_github_security_md(purl, filename, context, default_branch)
+    return check_github_security_md(purl, filename, context, default_branch, priority)
 
-def check_github_security_md(purl: PackageURL, filename: str, context: Context, default_branch="master"):
+def check_github_security_md(purl: PackageURL, filename: str, context: Context, default_branch="master", priority=25):
     """Checks a "SECURITY.md" file for a security contact."""
     logger.debug("Checking GitHub [%s]: %s", filename, purl)
     if purl is None:
@@ -220,6 +237,6 @@ def check_github_security_md(purl: PackageURL, filename: str, context: Context, 
     url = f"https://raw.githubusercontent.com/{purl.namespace}/{purl.name}/{default_branch}/{filename}"
     res = requests.get(url, timeout=30)
     if res.ok:
-        find_contacts(url, res.text, context)
+        find_contacts(url, res.text, context, priority)
     else:
         logger.warning("Error loading URL [%s]: %s", url, res.status_code)

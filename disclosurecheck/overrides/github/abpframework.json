@@ -1,0 +1,14 @@
+{
+    "match_regex": [
+        "pkg:github/abpframework/.*"
+    ],
+    "action": "replace",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "url",
+            "value": "https://support.abp.io/QA/Questions",
+            "source": "abp.io support page"
+        }
+    ]
+}

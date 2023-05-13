@@ -31,6 +31,7 @@ def check_for_overrides(purl: PackageURL, context: Context) -> bool:
 
     path = os.path.join(os.path.dirname(__file__), '..', 'overrides', purl.type)
     if purl.namespace:
+        file_paths.append(os.path.join(path, purl.namespace + '.json'))
         path = os.path.join(path, purl.namespace)
     path = os.path.join(path, purl.name)
 
