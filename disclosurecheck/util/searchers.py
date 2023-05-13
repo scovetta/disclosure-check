@@ -40,12 +40,10 @@ def find_contacts(url: str, text: str, context: Context, priority=25):
             )
 
     # Bare e-mail addresses
-    matches = set(re.findall(r"[\w.+-]+(?:@|\[at\])[\w-]+\.[\w.-]+", text))
-    for match in matches:
-        match = match.replace("[at]", "@")
-        if match not in found_contacts:
-            found_contacts.add(match)
-            context.contacts.append({"priority": priority, "type": "email", "source": url, "value": match})
+    for email in extract_emails(text + " " + text.replace("[at]", "@")):
+        if email not in found_contacts:
+            found_contacts.add(email)
+            context.contacts.append({"priority": priority, "type": "email", "source": url, "value": email})
 
     if "tidelift.com" in text:
         context.contacts.append(
