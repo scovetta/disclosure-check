@@ -44,6 +44,7 @@ COMMON_SECURITY_MD_PATHS = set(
 COMMON_OTHER_FILE_PATHS = set(
     [
         "%name%.gemspec",
+        "Cargo.toml"
     ]
 )
 
