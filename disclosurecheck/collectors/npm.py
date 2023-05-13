@@ -60,7 +60,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
             if npm_email:
                 context.contacts.append(
                     {
-                        "priority": 15,
+                        "priority": 45,
                         "type": "email",
                         "source": "npm registry (_npmUser)",
                         "name": npm_name,
@@ -74,7 +74,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
                 if maintainer_email:
                     context.contacts.append(
                         {
-                            "priority": 10,
+                            "priority": 45,
                             "type": "email",
                             "source": "npm registry (latest.maintainer)",
                             "name": maintainer_name,
