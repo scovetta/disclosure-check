@@ -65,10 +65,11 @@ def analyze_tidelift(purl: PackageURL, context: Context):
             logger.warning("Unable to find repository [%s]", purl)
             return
 
-        query = f"repo:{repo_obj.owner.login}/{repo_obj.name} security@tidelift.com"
+        query = f"repo:{repo_obj.owner.login}/{repo_obj.name} tidelift.com"
         logger.debug("Searching for [%s]", query)
         files = gh.search_code(query)
 
+        logger.debug("Found %d results", files.totalCount)
         if files.totalCount:
             context.contacts.append(
                 {

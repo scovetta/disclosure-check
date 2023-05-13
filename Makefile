@@ -18,7 +18,7 @@ build: clean
 	python -mbuild .
 
 	@echo "Building container image..."
-	docker build -t disclosurecheck:$(PROJECT_VERSION) .
+	docker build -t ghcr.io/scovetta/disclosurecheck:latest -t ghcr.io/scovetta/disclosurecheck:$(PROJECT_VERSION) .
 
 	echo "Cleaning up temporary environment"
 	deactivate
