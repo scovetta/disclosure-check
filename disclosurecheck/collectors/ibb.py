@@ -56,7 +56,7 @@ def analyze_ibb(purl: PackageURL, context: Context):
 
     for scope_item in scope_items:
         if re.match(scope_item["regex"], str(purl), re.IGNORECASE):
-            context.contacts.append(
+            context.add_contact(
                 {
                     "priority": 5,
                     "type": "url",
@@ -66,7 +66,7 @@ def analyze_ibb(purl: PackageURL, context: Context):
             )
 
             for url in scope_item["instruction_urls"]:
-                context.contacts.append(
+                context.add_contact(
                     {
                         "priority": 10,
                         "type": "url",
@@ -76,7 +76,7 @@ def analyze_ibb(purl: PackageURL, context: Context):
                 )
 
             for email in scope_item["instruction_emails"]:
-                context.contacts.append(
+                context.add_contact(
                     {
                         "priority": 10,
                         "type": "email",

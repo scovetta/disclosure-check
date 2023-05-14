@@ -30,7 +30,7 @@ pkg:npm/path-browserify
       "priority": 5,
       "type": "tidelift",
       "value": "security@tidelift.com",
-      "evidence": "security.md"
+      "source": "security.md"
     },
     {
       "priority": 5,

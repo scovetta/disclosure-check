@@ -48,7 +48,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
             if email:
                 for _email in extract_emails(email):
                     logger.debug("Found an e-mail address (%s)", _email)
-                    context.contacts.append(
+                    context.add_contact(
                         {
                             "priority": 20,
                             "type": "email",

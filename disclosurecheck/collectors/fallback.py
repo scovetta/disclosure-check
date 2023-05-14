@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 def add_fallback_mechanisms(context: Context) -> None:
     """Adds fallback disclosure mechanisms to all projects."""
 
-    context.contacts.append(
+    context.add_contact(
         {
             "priority": 100,
             "type": "fallback_url",
@@ -17,7 +17,7 @@ def add_fallback_mechanisms(context: Context) -> None:
         }
     )
 
-    context.contacts.append(
+    context.add_contact(
         {
             "priority": 100,
             "type": "fallback_url",
@@ -26,7 +26,7 @@ def add_fallback_mechanisms(context: Context) -> None:
         }
     )
 
-    context.contacts.append(
+    context.add_contact(
         {
             "priority": 100,
             "type": "fallback_email",

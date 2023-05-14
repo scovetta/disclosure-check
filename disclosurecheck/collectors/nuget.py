@@ -48,6 +48,6 @@ def analyze(purl: PackageURL, context: Context):
 
     # In addition, all NuGet packages have a way to contact the author (web page)
     logger.debug("Package was NuGet, so adding the NuGet package contact page.")
-    context.contacts.append(
+    context.add_contact(
         {"priority": 40, "type": "nuget_contact", "value": f"https://www.nuget.org/packages/{purl.name}"}
     )

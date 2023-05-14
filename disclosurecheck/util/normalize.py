@@ -1,5 +1,6 @@
 from __future__ import annotations
 import re
+import json
 from functools import lru_cache
 from urllib.parse import urlparse
 
@@ -70,7 +71,6 @@ def clean_contacts(contacts: List[Dict]):
 
         if '@googlegroups.com' in email:
             contact["priority"] = 99
-
 
 def normalize_packageurl(purl: PackageURL) -> PackageURL:
     if not purl:

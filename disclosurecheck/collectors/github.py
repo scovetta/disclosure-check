@@ -117,7 +117,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
 
     # Check for an email address of the owner (not typical)
     if repo_obj.owner.email:
-        context.contacts.append(
+        context.add_contact(
             {
                 "priority": 25,
                 "type": "email",
@@ -131,7 +131,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
     url = f"https://github.com/{_org}/{_repo}/security/advisories"
     res = requests.get(url, timeout=30)
     if "Report a vulnerability" in res.text:
-        context.contacts.append(
+        context.add_contact(
             {
                 "priority": 0,
                 "type": "github_pvr",
@@ -186,7 +186,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
         content = file.decoded_content.decode("utf-8")
         matches = set(re.findall(r"[\w.+-]+(@|\[at\])[\w-]+\.[\w.-]+", content))
         for match in matches:
-            context.contacts.append(
+            context.add_contact(
                 {
                     "priority": 25,
                     "type": "email",
@@ -214,7 +214,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
     for login in merged_by_people:
         email = gh.get_user(login).email
         if email:
-            context.contacts.append(
+            context.add_contact(
                 {
                     "priority": 65,
                     "type": "email",

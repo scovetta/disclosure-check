@@ -51,7 +51,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
                         if anchor.get('href', '').startswith('mailto:'):
                             email = anchor.get('href')[7:]
                             logger.debug("Found an e-mail address: %s", email)
-                            context.contacts.append(
+                            context.add_contact(
                                 {
                                     "priority": 20,
                                     "type": "email",

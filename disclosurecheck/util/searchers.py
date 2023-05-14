@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 IGNORE_URLS = [
     re.compile(r'/CHANGELOG.md$', re.IGNORECASE),
-    re.compile(r'/issues$'),
+    re.compile(r'/(issues|releases|tags)$'),
     re.compile(r'github\.com/[^/]+/[^/]+/?$'),
 ]
 
@@ -29,7 +29,7 @@ def find_contacts(url: str, text: str, context: Context, priority=25):
         email = match[1].replace("[at]", "@").strip()
         if email not in found_contacts:
             found_contacts.add(email)
-            context.contacts.append(
+            context.add_contact(
                 {
                     "priority": priority,
                     "type": "email",
@@ -43,10 +43,10 @@ def find_contacts(url: str, text: str, context: Context, priority=25):
     for email in extract_emails(text + " " + text.replace("[at]", "@")):
         if email not in found_contacts:
             found_contacts.add(email)
-            context.contacts.append({"priority": priority, "type": "email", "source": url, "value": email})
+            context.add_contact({"priority": priority, "type": "email", "source": url, "value": email})
 
     if "tidelift.com" in text:
-        context.contacts.append(
+        context.add_contact(
             {
                 "priority": 5,
                 "type": "tidelift",
@@ -75,7 +75,7 @@ def find_contacts(url: str, text: str, context: Context, priority=25):
                 logger.debug("Ignoring URL %s", _url)
 
             elif re.match(r".*/security/advisories/new$", _url):
-                context.contacts.append(
+                context.add_contact(
                     {
                         "priority": 0,
                         "type": "github_pvr",
@@ -85,7 +85,7 @@ def find_contacts(url: str, text: str, context: Context, priority=25):
                 )
 
             elif _url == "https://tidelift.com/security":
-                context.contacts.append(
+                context.add_contact(
                     {
                         "priority": 5,
                         "type": "tidelift",
@@ -95,7 +95,7 @@ def find_contacts(url: str, text: str, context: Context, priority=25):
                 )
 
             else:
-                context.contacts.append(
+                context.add_contact(
                     {
                         "priority": priority,
                         "type": "url",
