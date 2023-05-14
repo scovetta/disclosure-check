@@ -1,0 +1,14 @@
+{
+    "match_regex": [
+        "pkg:github/apache/.*"
+    ],
+    "action": "append",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "email",
+            "value": "security@apache.org",
+            "source": "https://apache.org/security/#reporting-a-vulnerability"
+        }
+    ]
+}
