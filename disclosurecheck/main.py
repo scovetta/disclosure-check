@@ -29,7 +29,7 @@ from disclosurecheck.util.normalize import clean_contacts, sanitize_github_url
 from disclosurecheck.util.context import Context
 from disclosurecheck.collectors.fallback import add_fallback_mechanisms
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('disclosurecheck')
 logger.setLevel(logging.ERROR)
 
 console = rich.console.Console(highlight=False)
@@ -196,7 +196,7 @@ def start():
         sys.exit(1)
 
     if args.verbose:
-        logger.setLevel(logging.DEBUG)
+        logging.getLogger('disclosurecheck').setLevel(logging.DEBUG)
 
     # Enable an in-memory cache, only if we're running as a script
     requests_cache.install_cache("disclosurecheck_cache", backend="memory", allowable_codes=[200, 404])

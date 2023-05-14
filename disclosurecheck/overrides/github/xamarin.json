@@ -1,0 +1,14 @@
+{
+    "match_regex": [
+        "pkg:github/xamarin/.*"
+    ],
+    "action": "append",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "email",
+            "value": "secure@microsoft.com",
+            "source": "https://github.com/microsoft/.github/blob/main/SECURITY.md"
+        }
+    ]
+}

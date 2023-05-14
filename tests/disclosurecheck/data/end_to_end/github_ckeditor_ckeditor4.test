@@ -1,0 +1,38 @@
+pkg:github/ckeditor/ckeditor4
+{
+  "package_url": "pkg:github/ckeditor/ckeditor4",
+  "contacts": [
+    {
+      "priority": 10,
+      "type": "email",
+      "source": "https://raw.githubusercontent.com/ckeditor/ckeditor4/master/SECURITY.md",
+      "value": "security@cksource.com"
+    },
+    {
+      "priority": 25,
+      "type": "email",
+      "source": "SECURITY.md",
+      "value": "security@cksource.com"
+    },
+    {
+      "priority": 100,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://snyk.io/vulnerability-disclosure/",
+      "source": "Snyk Vulnerability Disclosure Program"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://www.kb.cert.org/vuls/report/",
+      "source": "CERT/CC Vulnerability Reporting Form"
+    }
+  ],
+  "related_purls": [],
+  "notes": []
+}

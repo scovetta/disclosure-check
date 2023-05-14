@@ -40,3 +40,30 @@ class Context:
             "related_purls": list(sorted(set(str(s) for s in self.related_purls if str(s) != str(self.package_url)))),
             "notes": sorted(map(self.clean_note, self.notes))
         }
+
+    def add_contact(self, new_contact: Dict[str, Any]) -> None:
+        """
+        Adds a new contact in a smart way, consolidating contacts when they have the same type and value,
+        taking the highest priority of the two, and meging the source and name fields.
+        """
+        for contact in self.contacts:
+            # Consolidates contacts when they have the same type and value.
+            if (contact['type'] == new_contact['type'] and contact['value'] == new_contact['value']):
+                # Merge contacts
+                if 'priority' in contact:
+                    contact['priority'] = max(contact['priority'], new_contact['priority'])
+                elif 'priority' in new_contact:
+                    contact['priority'] = new_contact['priority']
+
+                for key in (set(contact.keys()) | set(new_contact.keys())) - set(['type', 'value', 'priority']):
+                    if key in contact:
+                        if key in new_contact:
+                            new_value = sorted(set(contact[key].split(',') + new_contact[key].split(',')))
+                            contact[key] = ','.join(new_value)
+                    else:
+                        contact[key] = new_contact[key]
+
+                return
+
+        # If we didn't find an existing contact, add a new one
+        self.contacts.append(new_contact)

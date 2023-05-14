@@ -1,0 +1,14 @@
+{
+    "match_regex": [
+        "pkg:github/google/.*"
+    ],
+    "action": "append",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "url",
+            "value": "https://g.co/vulnz",
+            "source": "https://github.com/google/.github/blob/master/SECURITY.md"
+        }
+    ]
+}

@@ -37,6 +37,6 @@ def analyze_securityinsights(purl: PackageURL, context: Context) -> None:
             email = security_contact.get("value")
             if not email:
                 continue
-            context.contacts.append({"priority": 0, "type": "email", "source": url, "value": email})
+            context.add_contact({"priority": 0, "type": "email", "source": url, "value": email})
     else:
         logger.warning("Error loading URL [%s]: %s", url, res.status_code)

@@ -1,0 +1,14 @@
+{
+    "match_regex": [
+        "pkg:github/ansible/.*"
+    ],
+    "action": "append",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "email",
+            "value": "security@ansible.com",
+            "source": "https://docs.ansible.com/ansible/devel/community/reporting_bugs_and_features.html#reporting-a-bug"
+        }
+    ]
+}

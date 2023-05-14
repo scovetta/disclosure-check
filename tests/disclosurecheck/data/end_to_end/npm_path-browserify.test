@@ -1,0 +1,370 @@
+pkg:npm/path-browserify
+{
+  "package_url": "pkg:npm/path-browserify",
+  "contacts": [
+    {
+      "priority": 0,
+      "type": "github_pvr",
+      "value": "https://github.com/browserify/path-browserify/security/advisories/new",
+      "source": "https://github.com/browserify/path-browserify/security/advisories"
+    },
+    {
+      "priority": 5,
+      "type": "tidelift",
+      "value": "security@tidelift.com",
+      "source": "https://github.com/browserify/.github"
+    },
+    {
+      "priority": 5,
+      "type": "tidelift",
+      "value": "security@tidelift.com",
+      "source": "https://raw.githubusercontent.com/browserify/path-browserify/master/security.md"
+    },
+    {
+      "priority": 5,
+      "type": "tidelift",
+      "value": "security@tidelift.com",
+      "source": null
+    },
+    {
+      "priority": 5,
+      "type": "tidelift",
+      "value": "security@tidelift.com",
+      "source": "security.md"
+    },
+    {
+      "priority": 5,
+      "type": "tidelift",
+      "value": "security@tidelift.com",
+      "source": "https://raw.githubusercontent.com/browserify/.github/main/SECURITY.md"
+    },
+    {
+      "priority": 5,
+      "type": "tidelift",
+      "value": "security@tidelift.com",
+      "source": "https://github.com/browserify/path-browserify"
+    },
+    {
+      "priority": 5,
+      "type": "tidelift",
+      "value": "security@tidelift.com",
+      "source": "security.md"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "balupton",
+      "value": "b@lupton.cc"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "bret",
+      "value": "bcomnes@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "cwmma",
+      "value": "calvin.metcalf@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "elnounch",
+      "value": "contact@elnounch.net"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "ashaffer88",
+      "value": "darawk@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "mattdesl",
+      "value": "dave.des@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "dominictarr",
+      "value": "dominic.tarr@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "indutny",
+      "value": "fedor@indutny.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "feross",
+      "value": "feross@feross.org"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "forbeslindesay",
+      "value": "forbes@lindesay.co.uk"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "garann",
+      "value": "garann@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "emilbayes",
+      "value": "github@tixz.dk"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "hughsk",
+      "value": "hughskennedy@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "jprichardson",
+      "value": "jprichardson@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "jryans",
+      "value": "jryans@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "lukechilds",
+      "value": "lukechilds123@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "stevemao",
+      "value": "maochenyan@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "leichtgewicht",
+      "value": "martin.heidegger@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "mafintosh",
+      "value": "mathiasbuus@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "maxogden",
+      "value": "max@maxogden.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "tehshrike",
+      "value": "me@JoshDuff.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "gkatsev",
+      "value": "me@gkatsev.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "ahdinosaur",
+      "value": "michael.williams@enspiral.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "jmm",
+      "value": "npm-public@jessemccarthy.net"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "mellowmelon",
+      "value": "palmermebane@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "parshap",
+      "value": "parshap+npm@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "fpereira1",
+      "value": "pereira.filype@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "pkrumins",
+      "value": "peteris.krumins@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "bpostlethwaite",
+      "value": "post.ben.here@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (_npmUser)",
+      "name": "goto-bus-stop",
+      "value": "renee@kooi.me"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "goto-bus-stop",
+      "value": "renee@kooi.me"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "sethvincent",
+      "value": "sethvincent@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "defunctzombie",
+      "value": "shtylman@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "substack",
+      "value": "substack@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "terinjokes",
+      "value": "terinjokes@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "thlorenz",
+      "value": "thlorenz@gmx.de"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "ungoldman",
+      "value": "ungoldman@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "anandthakker",
+      "value": "vestibule@anandthakker.net"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "yerkopalma",
+      "value": "yerko.palma@usach.cl"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "yoshuawuyts",
+      "value": "yoshuawuyts@gmail.com"
+    },
+    {
+      "priority": 45,
+      "type": "email",
+      "source": "npm registry (latest.maintainer)",
+      "name": "zertosh",
+      "value": "zertosh@gmail.com"
+    },
+    {
+      "priority": 50,
+      "type": "email",
+      "source": "npm registry (author)",
+      "name": "James Halliday",
+      "value": "mail@substack.net"
+    },
+    {
+      "priority": 100,
+      "type": "email",
+      "value": "securitylab@github.com",
+      "source": "https://securitylab.github.com/"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://snyk.io/vulnerability-disclosure/",
+      "source": "Snyk Vulnerability Disclosure Program"
+    },
+    {
+      "priority": 100,
+      "type": "url",
+      "value": "https://www.kb.cert.org/vuls/report/",
+      "source": "CERT/CC Vulnerability Reporting Form"
+    }
+  ],
+  "related_purls": [
+    "pkg:github/browserify/path-browserify"
+  ],
+  "notes": []
+}

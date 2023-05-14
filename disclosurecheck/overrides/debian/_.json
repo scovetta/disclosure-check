@@ -1,0 +1,22 @@
+{
+    "match_regex": [
+        "pkg:debian/.*"
+    ],
+    "action": "append",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "email",
+            "name": "Debian Security Team",
+            "value": "security@debian.org",
+            "source": "https://www.debian.org/security/faq#handling"
+        },
+        {
+            "priority": 0,
+            "type": "email",
+            "name": "Debian Security Team",
+            "value": "team@security.debian.org",
+            "source": "https://www.debian.org/security/faq#handling"
+        }
+    ]
+}

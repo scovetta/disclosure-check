@@ -1,6 +1,6 @@
 [project]
 name = "disclosurecheck"
-version = "0.0.6"
+version = "0.1.0"
 authors = [
   { name="Michael Scovetta", email="michael.scovetta@gmail.com" },
 ]
@@ -22,7 +22,8 @@ dependencies = [
   "urlextract",
   "PyYAML >= 6.0",
   "rich",
-  "validators >= 0.20.0"
+  "validators >= 0.20.0",
+  "beautifulsoup4 >= 4.12.2",
 ]
 
 license = {file = "LICENSE"}

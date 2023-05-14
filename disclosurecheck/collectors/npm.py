@@ -32,7 +32,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
         author_name = data.get("author", {}).get("name", "").strip()
         author_email = data.get("author", {}).get("email", "").strip()
         if author_email:
-            context.contacts.append(
+            context.add_contact(
                 {
                     "priority": 50,
                     "type": "email",
@@ -43,7 +43,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
             )
 
         for match in re.findall(r"\s(@[\w-]+)", author_name):
-            context.contacts.append(
+            context.add_contact(
                 {
                     "priority": 70,
                     "type": "social",
@@ -58,7 +58,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
             npm_name = latest.get("_npmUser", {}).get("name", "").strip()
             npm_email = latest.get("_npmUser", {}).get("email", "").strip()
             if npm_email:
-                context.contacts.append(
+                context.add_contact(
                     {
                         "priority": 45,
                         "type": "email",
@@ -72,7 +72,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
                 maintainer_name = maintainer.get("name", "")
                 maintainer_email = maintainer.get("email", "")
                 if maintainer_email:
-                    context.contacts.append(
+                    context.add_contact(
                         {
                             "priority": 45,
                             "type": "email",

@@ -1,24 +1,27 @@
-from multiprocessing.pool import ThreadPool
-from multiprocessing import cpu_count
 import logging
 import os
 import re
 from functools import lru_cache
+from multiprocessing import cpu_count
+from multiprocessing.pool import ThreadPool
 
+import github
 import requests
 from github import Github
 from packageurl import PackageURL
 
 from disclosurecheck.collectors.securityinsights import analyze_securityinsights
-from disclosurecheck.util.searchers import find_contacts
-from disclosurecheck.util.normalize import normalize_packageurl
-
 from disclosurecheck.util.context import Context
+from disclosurecheck.util.normalize import normalize_packageurl
+from disclosurecheck.util.searchers import find_contacts
+
 from ..util.normalize import normalize_packageurl, sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
 NUGET_WEBSITE = "https://www.nuget.org"
+
+MAX_PULLS_TO_CHECK = 20
 
 COMMON_SECURITY_MD_PATHS = set(
     [
@@ -38,16 +41,10 @@ COMMON_SECURITY_MD_PATHS = set(
         "security.rst",
         "security.md",
         "Security.md",
-        "SECURITY.md"
+        "SECURITY.md",
     ]
 )
-COMMON_OTHER_FILE_PATHS = set(
-    [
-        "%name%.gemspec",
-        "Cargo.toml",
-        "LICENSE"
-    ]
-)
+COMMON_OTHER_FILE_PATHS = set(["%name%.gemspec", "Cargo.toml", "LICENSE", "composer.json"])
 
 MAX_CONTENT_SEARCH_FILES = 30
 
@@ -63,9 +60,10 @@ def get_github_token():
     gh = Github(token_value)
     rate_limit = gh.get_rate_limit()
     logger.debug(
-        "GitHub Rate Limits: core remaining=%d, search remaining=%d",
+        "GitHub Rate Limits: core remaining=%d, search remaining=%d [%s]",
         rate_limit.core.remaining,
         rate_limit.search.remaining,
+        rate_limit,
     )
     if rate_limit.search.remaining == 0 or rate_limit.core.remaining == 0:
         logger.error("You have exceeded your GitHub API rate limit. Functionality will be limited.")
@@ -119,7 +117,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
 
     # Check for an email address of the owner (not typical)
     if repo_obj.owner.email:
-        context.contacts.append(
+        context.add_contact(
             {
                 "priority": 25,
                 "type": "email",
@@ -133,7 +131,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
     url = f"https://github.com/{_org}/{_repo}/security/advisories"
     res = requests.get(url, timeout=30)
     if "Report a vulnerability" in res.text:
-        context.contacts.append(
+        context.add_contact(
             {
                 "priority": 0,
                 "type": "github_pvr",
@@ -188,7 +186,7 @@ def analyze(purl: PackageURL, context: Context) -> None:
         content = file.decoded_content.decode("utf-8")
         matches = set(re.findall(r"[\w.+-]+(@|\[at\])[\w-]+\.[\w.-]+", content))
         for match in matches:
-            context.contacts.append(
+            context.add_contact(
                 {
                     "priority": 25,
                     "type": "email",
@@ -199,10 +197,32 @@ def analyze(purl: PackageURL, context: Context) -> None:
     if num_files_left == MAX_CONTENT_SEARCH_FILES:
         logger.debug("No results found in GitHub code search.")
 
-    # Try top committers
-    # logger.debug("Searching for top committers.")
-    # top_committers = repo_obj.get_contributors(order="desc", anon="true")
-    # TODO
+    # Check for recent pull requests
+    merged_by_people = set()
+    pulls_checked = 0
+    pulls = repo_obj.get_pulls(state="closed", sort="updated", direction="desc")
+    for pull in pulls:
+        if pulls_checked > MAX_PULLS_TO_CHECK:
+            break
+        pulls_checked += 1
+
+        if pull.merged_by is not None:
+            login = pull.merged_by.login
+            if login not in merged_by_people:
+                merged_by_people.add(login)
+
+    for login in merged_by_people:
+        email = gh.get_user(login).email
+        if email:
+            context.add_contact(
+                {
+                    "priority": 65,
+                    "type": "email",
+                    "source": f"Pull requests merged by {login}",
+                    "name": login,
+                    "value": email,
+                }
+            )
 
 
 def _check_github_security_md(args):
@@ -219,7 +239,10 @@ def _check_github_security_md(args):
 
     return check_github_security_md(purl, filename, context, default_branch, priority)
 
-def check_github_security_md(purl: PackageURL, filename: str, context: Context, default_branch="master", priority=25):
+
+def check_github_security_md(
+    purl: PackageURL, filename: str, context: Context, default_branch="master", priority=25
+):
     """Checks a "SECURITY.md" file for a security contact."""
     logger.debug("Checking GitHub [%s]: %s", filename, purl)
     if purl is None:
