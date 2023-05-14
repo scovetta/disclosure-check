@@ -36,13 +36,17 @@ def analyze_librariesio(purl: PackageURL, context: Context):
     if res.ok:
         data = res.json()
 
-        urls = [sanitize_github_url(data.get("repository_url"))]
+        urls = [sanitize_github_url(data.get("repository_url")),
+                sanitize_github_url(data.get('homepage'))]
+        logger.debug("Found URLs: %s", urls)
+
         for url in set(urls):
             if not url:
                 continue
             logger.debug("Found a URL (%s)", url)
             matches = re.match(r".*github\.com/([^/]+)/([^/]+)(\.git)?", url, re.IGNORECASE)
             if matches:
+                logger.debug("Adding related PackageURL: %s", matches.group(0))
                 context.related_purls.append(
                     normalize_packageurl(
                         PackageURL.from_string("pkg:github/" + matches.group(1) + "/" + matches.group(2))

@@ -1,0 +1,14 @@
+{
+    "match_regex": [
+        "pkg:github/crate/.*"
+    ],
+    "action": "append",
+    "contacts": [
+        {
+            "priority": 0,
+            "type": "email",
+            "value": "security@crate.io",
+            "source": "https://crate.io/security"
+        }
+    ]
+}
