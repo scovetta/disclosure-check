@@ -37,7 +37,7 @@ test-dist: build
 	rm -rf _tmpvenv
 
 	echo "Validating image..."
-	docker run --rm -t disclosurecheck:$(PROJECT_VERSION) --help
+	docker run --rm -t ghcr.io/scovetta/disclosurecheck:$(PROJECT_VERSION) --help
 
 clean:
 	@echo "Cleaning up temporary environment"
