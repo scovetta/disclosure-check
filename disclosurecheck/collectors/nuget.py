@@ -6,7 +6,7 @@ import requests
 from packageurl import PackageURL
 
 from disclosurecheck.util.context import Context
-from ..util.normalize import normalize_packageurl, sanitize_github_url
+from disclosurecheck.util.normalize import normalize_packageurl, sanitize_github_url
 
 logger = logging.getLogger(__name__)
 
@@ -49,5 +49,10 @@ def analyze(purl: PackageURL, context: Context):
     # In addition, all NuGet packages have a way to contact the author (web page)
     logger.debug("Package was NuGet, so adding the NuGet package contact page.")
     context.add_contact(
-        {"priority": 40, "type": "nuget_contact", "value": f"https://www.nuget.org/packages/{purl.name}"}
+        {
+            "priority": 40,
+            "type": "url",
+            "value": f"https://www.nuget.org/packages/{purl.name}/ContactOwners",
+            "source": "https://learn.microsoft.com/en-us/nuget/nuget-org/nuget-org-faq#what-are-the-default-license-terms-if-a-package-doesn-t-provide-specific-license-information",
+        }
     )
