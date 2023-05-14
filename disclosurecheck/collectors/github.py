@@ -45,7 +45,8 @@ COMMON_OTHER_FILE_PATHS = set(
     [
         "%name%.gemspec",
         "Cargo.toml",
-        "LICENSE"
+        "LICENSE",
+        "composer.json"
     ]
 )
 
@@ -63,9 +64,10 @@ def get_github_token():
     gh = Github(token_value)
     rate_limit = gh.get_rate_limit()
     logger.debug(
-        "GitHub Rate Limits: core remaining=%d, search remaining=%d",
+        "GitHub Rate Limits: core remaining=%d, search remaining=%d [%s]",
         rate_limit.core.remaining,
         rate_limit.search.remaining,
+        rate_limit
     )
     if rate_limit.search.remaining == 0 or rate_limit.core.remaining == 0:
         logger.error("You have exceeded your GitHub API rate limit. Functionality will be limited.")
