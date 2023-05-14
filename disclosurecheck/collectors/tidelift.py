@@ -38,13 +38,13 @@ def analyze_tidelift(purl: PackageURL, context: Context):
     res = requests.get(url, timeout=30)
 
     if res.ok:
-        context.contacts.append(
+        context.add_contact(
             {
                 "priority": 5,
                 "type": "tidelift",
                 "name": "Tidelift Security",
                 "value": "security@tidelift.com",
-                "evidence": url,
+                "source": url,
             }
         )
     else:
@@ -71,11 +71,17 @@ def analyze_tidelift(purl: PackageURL, context: Context):
 
         logger.debug("Found %d results", files.totalCount)
         if files.totalCount:
-            context.contacts.append(
-                {
-                    "priority": 5,
-                    "type": "tidelift",
-                    "value": "security@tidelift.com",
-                    "evidence": ','.join([f.name for f in files]),
-                }
-            )
+            tidelift_files = []
+            for f in files:
+                if f.name not in ['package-lock.json', 'yarn.lock']:
+                    logger.debug("Found Tidelift reference in [%s]", f.name)
+                    tidelift_files.append(f.name)
+            if tidelift_files:
+                context.add_contact(
+                    {
+                        "priority": 5,
+                        "type": "tidelift",
+                        "value": "security@tidelift.com",
+                        "source": ','.join(tidelift_files),
+                    }
+                )
