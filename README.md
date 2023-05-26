@@ -1,3 +1,7 @@
+# MOVED
+
+**This project has been moved to OpenSSF at [github.com/ossf/disclosure-check](https://github.com/ossf/disclosure-check).**
+
 [![Scorecard supply-chain security](https://github.com/scovetta/disclosure-check/actions/workflows/scorecards.yml/badge.svg)](https://github.com/scovetta/disclosure-check/actions/workflows/scorecards.yml)
 ![PyPI](https://img.shields.io/pypi/v/disclosurecheck)
 
